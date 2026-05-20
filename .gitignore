@@ -39,3 +39,6 @@ htmlcov/
 
 # mypy
 .mypy_cache/
+
+#UI/UX
+frontend/UI-UX/
