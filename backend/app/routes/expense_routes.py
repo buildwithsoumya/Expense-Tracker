@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import (
     APIRouter,
     Depends,
@@ -163,3 +164,55 @@ def monthly_summary(
         "month": month,
         "total_expense": total or 0
     }
+
+@router.get("/filter")
+def filter_expenses(
+
+    category_id: int = None,
+
+    payment_method: str = None,
+
+    start_date: date = None,
+
+    end_date: date = None,
+
+    payload=Depends(JWTBearer()),
+
+    db: Session = Depends(get_db)
+):
+
+    query = db.query(Expense).filter(
+        Expense.user_id == payload["user_id"]
+    )
+
+    # FILTER BY CATEGORY
+    if category_id:
+
+        query = query.filter(
+            Expense.category_id == category_id
+        )
+
+    # FILTER BY PAYMENT METHOD
+    if payment_method:
+
+        query = query.filter(
+            Expense.payment_method == payment_method
+        )
+
+    # FILTER BY START DATE
+    if start_date:
+
+        query = query.filter(
+            Expense.expense_date >= start_date
+        )
+
+    # FILTER BY END DATE
+    if end_date:
+
+        query = query.filter(
+            Expense.expense_date <= end_date
+        )
+
+    expenses = query.all()
+
+    return expenses

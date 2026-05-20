@@ -7,14 +7,12 @@ from jose import JWTError, jwt
 
 logger = logging.getLogger("auth.jwt")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+from app.config import settings
 
 
 def create_access_token(user_id: int, email: str) -> str:
     now = datetime.now(timezone.utc)
-    expire = now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode = {
         "sub": str(user_id),
@@ -26,15 +24,15 @@ def create_access_token(user_id: int, email: str) -> str:
 
     logger.debug("Creating access token for user_id=%s exp=%s", user_id, expire.isoformat())
 
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def verify_access_token(token: str) -> dict:
     try:
         payload = jwt.decode(
             token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
             options={"require_exp": True, "require_sub": True},
         )
 
