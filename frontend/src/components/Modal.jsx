@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { X } from 'lucide-react'
 
 const Modal = ({ open, onClose, title, children }) => (
   <AnimatePresence>
@@ -11,7 +12,7 @@ const Modal = ({ open, onClose, title, children }) => (
         onClick={onClose}
       >
         <motion.div
-          className="glass-panel glass-highlight w-full max-w-lg p-6"
+          className="glass-panel w-full max-w-lg p-6"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 20, opacity: 0 }}
@@ -23,9 +24,10 @@ const Modal = ({ open, onClose, title, children }) => (
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-glass-border px-3 py-1 text-xs text-silver-muted hover:text-white"
+              aria-label="Close modal"
+              className="border border-glass-border p-2 text-silver-muted transition-none"
             >
-              Close
+              <X size={14} />
             </button>
           </div>
           {children}

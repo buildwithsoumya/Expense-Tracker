@@ -19,15 +19,27 @@
   h4 {
     @apply font-display text-silver;
   }
+
+  a {
+    @apply transition-all duration-300 ease-glass;
+  }
+
+  a:hover {
+    @apply translate-y-0;
+  }
+
+  a:active {
+    @apply translate-y-0;
+  }
 }
 
 @layer components {
   .glass-panel {
-    @apply rounded-2xl border border-glass-border bg-glass-fill backdrop-blur-xl shadow-soft;
+    @apply rounded-none border border-glass-border bg-glass-fill backdrop-blur-sm shadow-soft;
   }
 
   .glass-card {
-    @apply rounded-xl border border-glass-border bg-glass-fill backdrop-blur-xl shadow-soft;
+    @apply rounded-none border border-glass-border bg-glass-fill backdrop-blur-sm shadow-soft;
   }
 
   .glass-highlight {
@@ -35,19 +47,36 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-electric-blue to-deep-purple px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 ease-glass hover:scale-[1.02];
+    @apply inline-flex items-center justify-center gap-2 rounded-none bg-silver px-5 py-3 text-sm font-semibold text-ink transition duration-300 ease-glass;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-glass-border bg-transparent px-5 py-3 text-sm font-semibold text-silver transition duration-300 ease-glass hover:border-electric-blue hover:text-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-glass-border bg-transparent px-5 py-3 text-sm font-semibold text-silver-muted transition duration-300 ease-glass hover:border-silver hover:text-silver;
   }
 
   .input-field {
-    @apply w-full rounded-xl border border-glass-border bg-charcoal/70 px-4 py-3 text-sm text-silver placeholder:text-silver-muted focus:border-electric-blue focus:outline-none focus:ring-2 focus:ring-electric-blue/40;
+    @apply w-full rounded-none border border-glass-border bg-graphite/70 px-4 py-3 text-sm text-silver placeholder:text-silver-muted focus:border-silver focus:outline-none focus:ring-2 focus:ring-silver/20;
   }
 
   .tag {
-    @apply rounded-full border border-electric-blue/40 bg-electric-blue/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-electric-blue;
+    @apply border border-glass-border bg-graphite/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-silver-muted;
+  }
+
+  .btn-slide {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+  }
+
+  .btn-slide:hover::after {
+    transform: translateX(0);
   }
 }
 

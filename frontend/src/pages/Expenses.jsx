@@ -18,9 +18,9 @@ import {
 const defaultForm = {
   title: '',
   amount: '',
-  category: '',
+  category_id: '',
   payment_method: '',
-  date: '',
+  expense_date: '',
 }
 
 const Expenses = () => {
@@ -92,9 +92,13 @@ const Expenses = () => {
     setForm({
       title: expense.title ?? expense.description ?? '',
       amount: expense.amount ?? '',
-      category: expense.category ?? '',
+      category_id: expense.category_id ?? '',
       payment_method: expense.payment_method ?? '',
-      date: expense.date ? expense.date.split('T')[0] : '',
+      expense_date: expense.expense_date
+        ? expense.expense_date.split('T')[0]
+        : expense.date
+          ? expense.date.split('T')[0]
+          : '',
     })
     setModalOpen(true)
   }
@@ -144,7 +148,7 @@ const Expenses = () => {
         </Button>
       </div>
 
-      <div className="glass-card glass-highlight grid gap-4 p-5 md:grid-cols-6">
+      <div className="glass-card grid gap-4 p-5 md:grid-cols-6">
         <Input
           label="Search"
           name="search"
@@ -236,10 +240,10 @@ const Expenses = () => {
             required
           />
           <Input
-            label="Category"
-            name="category"
-            placeholder="Food"
-            value={form.category}
+            label="Category ID"
+            name="category_id"
+            placeholder="1"
+            value={form.category_id}
             onChange={handleFormChange}
             required
           />
@@ -251,14 +255,14 @@ const Expenses = () => {
             onChange={handleFormChange}
           />
           <Input
-            label="Date"
+            label="Expense Date"
             type="date"
-            name="date"
-            value={form.date}
+            name="expense_date"
+            value={form.expense_date}
             onChange={handleFormChange}
             required
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full btn-slide">
             {editTarget ? 'Update Expense' : 'Add Expense'}
           </Button>
         </form>

@@ -68,7 +68,7 @@ const Categories = () => {
       ) : (
         <div className="grid grid-auto-fit gap-4">
           {categories.map((category) => (
-            <div key={category.id ?? category.name} className="glass-card glass-highlight p-6">
+            <div key={category.id ?? category.name} className="glass-card p-6">
               <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">Category</p>
               <h3 className="mt-3 text-lg font-semibold text-silver">
                 {category.name ?? category.title}
@@ -87,7 +87,7 @@ const Categories = () => {
             onChange={(event) => setName(event.target.value)}
             required
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full btn-slide">
             Add Category
           </Button>
         </form>

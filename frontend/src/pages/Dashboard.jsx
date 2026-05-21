@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   TrendingUp,
   CreditCard,
@@ -21,6 +21,8 @@ import DashboardCard from '../components/DashboardCard'
 import ChartCard from '../components/ChartCard'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
+import Modal from '../components/Modal'
+import Input from '../components/Input'
 import {
   getOverview,
   getCategoryBreakdown,
@@ -28,9 +30,10 @@ import {
   getTopCategory,
   getRecentTransactions,
 } from '../services/analyticsService'
+import { addExpense } from '../services/expenseService'
 import { formatCurrency, formatDate } from '../utils/format'
 
-const palette = ['#0066ff', '#7000ff', '#b3c5ff', '#d1bcff', '#c6c6c6']
+const palette = ['#f5f5f5', '#d4d4d8', '#a1a1aa', '#71717a', '#52525b']
 
 const Dashboard = () => {
   const [overview, setOverview] = useState(null)
@@ -39,49 +42,96 @@ const Dashboard = () => {
   const [topCategory, setTopCategory] = useState(null)
   const [recent, setRecent] = useState([])
   const [error, setError] = useState('')
+  const [quickAddOpen, setQuickAddOpen] = useState(false)
+  const [quickAddForm, setQuickAddForm] = useState({
+    title: '',
+    amount: '',
+    category_id: '',
+    payment_method: '',
+    expense_date: '',
+  })
+  const [quickAddError, setQuickAddError] = useState('')
+  const [quickAddLoading, setQuickAddLoading] = useState(false)
+
+  const getErrorMessage = (err, fallback) => {
+    const detail = err?.response?.data?.detail
+    if (Array.isArray(detail)) {
+      return detail.map((item) => item?.msg ?? item?.message ?? String(item)).join(', ')
+    }
+    if (typeof detail === 'string') return detail
+    if (detail) return JSON.stringify(detail)
+    return err?.message ?? fallback
+  }
+
+  const fetchData = useCallback(async () => {
+    setError('')
+    try {
+      const [
+        overviewData,
+        breakdownData,
+        trendData,
+        topData,
+        recentData,
+      ] = await Promise.all([
+        getOverview(),
+        getCategoryBreakdown(),
+        getMonthlyTrend(),
+        getTopCategory(),
+        getRecentTransactions(),
+      ])
+      setOverview(overviewData)
+      setBreakdown(breakdownData ?? [])
+      setMonthlyTrend(trendData ?? [])
+      setTopCategory(topData)
+      setRecent(recentData ?? [])
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to load analytics.'))
+    }
+  }, [])
 
   useEffect(() => {
-    const fetchData = async () => {
-      setError('')
-      try {
-        const [
-          overviewData,
-          breakdownData,
-          trendData,
-          topData,
-          recentData,
-        ] = await Promise.all([
-          getOverview(),
-          getCategoryBreakdown(),
-          getMonthlyTrend(),
-          getTopCategory(),
-          getRecentTransactions(),
-        ])
-        setOverview(overviewData)
-        setBreakdown(breakdownData ?? [])
-        setMonthlyTrend(trendData ?? [])
-        setTopCategory(topData)
-        setRecent(recentData ?? [])
-      } catch (err) {
-        setError(err?.response?.data?.detail ?? err.message ?? 'Failed to load analytics.')
-      }
-    }
-
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData()
-  }, [])
+  }, [fetchData])
+
+  const handleQuickAddChange = (event) => {
+    setQuickAddForm((prev) => ({ ...prev, [event.target.name]: event.target.value }))
+  }
+
+  const handleQuickAddSubmit = async (event) => {
+    event.preventDefault()
+    setQuickAddError('')
+    setQuickAddLoading(true)
+    try {
+      await addExpense(quickAddForm)
+      setQuickAddOpen(false)
+      setQuickAddForm({
+        title: '',
+        amount: '',
+        category_id: '',
+        payment_method: '',
+        expense_date: '',
+      })
+      await fetchData()
+    } catch (err) {
+      setQuickAddError(getErrorMessage(err, 'Failed to add expense.'))
+    } finally {
+      setQuickAddLoading(false)
+    }
+  }
 
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">
-            AI Expense Command
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold">Financial Overview</h1>
+          
+          <h1 className="mt-2 text-3xl font-semibold">My Finances</h1>
         </div>
-        <Button>
-          <Plus size={16} />
-          Quick Add Expense
+        <Button onClick={() => setQuickAddOpen(true)} className="whitespace-nowrap btn-slide">
+          <span className="flex items-center gap-2">
+            <Plus size={16} />
+            Add Expense
+          </span>
         </Button>
       </div>
 
@@ -91,18 +141,21 @@ const Dashboard = () => {
         <>
           <div className="grid gap-4 md:grid-cols-3">
             <DashboardCard
+              className="rounded-none"
               title="Total Spend"
               value={formatCurrency(overview?.total_expense ?? 0)}
               subtitle="All time"
               icon={<Wallet size={18} />}
             />
             <DashboardCard
+              className="rounded-none"
               title="Transactions"
               value={overview?.total_transactions ?? 0}
               subtitle="Verified spend"
               icon={<CreditCard size={18} />}
             />
             <DashboardCard
+              className="rounded-none"
               title="Top Category"
               value={topCategory?.category ?? '—'}
               subtitle={formatCurrency(topCategory?.amount ?? 0)}
@@ -111,24 +164,24 @@ const Dashboard = () => {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-            <ChartCard title="Monthly Overview">
+            <ChartCard title="Monthly Overview" className="rounded-none">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={monthlyTrend}>
-                    <XAxis dataKey="month" stroke="#8c90a1" />
-                    <YAxis stroke="#8c90a1" />
+                    <XAxis dataKey="month" stroke="#a1a1aa" />
+                    <YAxis stroke="#a1a1aa" />
                     <Tooltip
                       contentStyle={{
-                        background: '#131313',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#e2e2e2',
+                        background: '#111111',
+                        border: '1px solid rgba(245,245,245,0.12)',
+                        color: '#f5f5f5',
                       }}
                     />
                     <Line
                       type="monotone"
                       dataKey="total"
-                      stroke="#0066ff"
-                      strokeWidth={2}
+                      stroke="#f5f5f5"
+                      strokeWidth={1.5}
                       dot={false}
                     />
                   </LineChart>
@@ -136,7 +189,7 @@ const Dashboard = () => {
               </div>
             </ChartCard>
 
-            <ChartCard title="Category Breakdown">
+            <ChartCard title="Category Breakdown" className="rounded-none">
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -156,9 +209,9 @@ const Dashboard = () => {
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        background: '#131313',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#e2e2e2',
+                        background: '#111111',
+                        border: '1px solid rgba(245,245,245,0.12)',
+                        color: '#f5f5f5',
                       }}
                     />
                   </PieChart>
@@ -168,7 +221,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-            <ChartCard title="Recent Transactions">
+            <ChartCard title="Recent Transactions" className="rounded-none">
               <div className="space-y-4">
                 {recent.length === 0 ? (
                   <p className="text-sm text-silver-muted">No recent transactions.</p>
@@ -176,7 +229,7 @@ const Dashboard = () => {
                   recent.slice(0, 5).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between rounded-xl border border-glass-border px-4 py-3"
+                      className="flex items-center justify-between border border-glass-border bg-graphite/50 px-4 py-3"
                     >
                       <div>
                         <p className="text-sm font-semibold text-silver">
@@ -195,7 +248,7 @@ const Dashboard = () => {
               </div>
             </ChartCard>
 
-            <div className="glass-card glass-highlight flex h-full flex-col justify-between p-6">
+            <div className="glass-card flex h-full flex-col justify-between p-6 rounded-none">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">
                   AI Insights
@@ -208,14 +261,63 @@ const Dashboard = () => {
                   more activity is logged.
                 </p>
               </div>
-              <div className="mt-6 flex items-center gap-2 text-sm text-electric-blue">
-                <Sparkles size={16} />
-                Syncing AI insights
-              </div>
             </div>
           </div>
         </>
       )}
+
+      <Modal
+        open={quickAddOpen}
+        onClose={() => setQuickAddOpen(false)}
+        title="Quick Add Expense"
+      >
+        <form className="space-y-4" onSubmit={handleQuickAddSubmit}>
+          <Input
+            label="Title"
+            name="title"
+            placeholder="Coffee at Celeste"
+            value={quickAddForm.title}
+            onChange={handleQuickAddChange}
+            required
+          />
+          <Input
+            label="Amount"
+            type="number"
+            name="amount"
+            placeholder="420"
+            value={quickAddForm.amount}
+            onChange={handleQuickAddChange}
+            required
+          />
+          <Input
+            label="Category ID"
+            name="category_id"
+            placeholder="1"
+            value={quickAddForm.category_id}
+            onChange={handleQuickAddChange}
+            required
+          />
+          <Input
+            label="Payment Method"
+            name="payment_method"
+            placeholder="Card"
+            value={quickAddForm.payment_method}
+            onChange={handleQuickAddChange}
+          />
+          <Input
+            label="Expense Date"
+            type="date"
+            name="expense_date"
+            value={quickAddForm.expense_date}
+            onChange={handleQuickAddChange}
+            required
+          />
+          {quickAddError && <p className="text-sm text-red-300">{quickAddError}</p>}
+          <Button type="submit" className="w-full btn-slide" disabled={quickAddLoading}>
+            {quickAddLoading ? 'Adding expense...' : 'Add Expense'}
+          </Button>
+        </form>
+      </Modal>
     </div>
   )
 }

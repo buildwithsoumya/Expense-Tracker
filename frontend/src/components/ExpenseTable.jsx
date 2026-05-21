@@ -1,7 +1,7 @@
 import { formatCurrency, formatDate } from '../utils/format'
 
 const ExpenseTable = ({ expenses, onEdit, onDelete }) => (
-  <div className="overflow-hidden rounded-2xl border border-glass-border">
+  <div className="overflow-hidden border border-glass-border">
     <table className="w-full text-left text-sm">
       <thead className="bg-charcoal/80 text-xs uppercase tracking-[0.2em] text-silver-muted">
         <tr>
@@ -29,14 +29,14 @@ const ExpenseTable = ({ expenses, onEdit, onDelete }) => (
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
-                  className="rounded-full border border-glass-border px-3 py-1 text-xs text-silver-muted hover:text-white"
+                  className="border border-glass-border px-3 py-1 text-xs text-silver-muted hover:text-white"
                   onClick={() => onEdit(expense)}
                 >
                   Edit
                 </button>
                 <button
                   type="button"
-                  className="rounded-full border border-red-400/40 px-3 py-1 text-xs text-red-300 hover:text-red-200"
+                  className="border border-red-400/40 px-3 py-1 text-xs text-red-300 hover:text-red-200"
                   onClick={() => onDelete(expense)}
                 >
                   Delete

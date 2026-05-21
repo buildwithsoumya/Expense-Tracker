@@ -9,11 +9,11 @@ export const AuthProvider = ({ children }) => {
 
   const handleAuthSuccess = useCallback((data) => {
     const nextToken = extractToken(data)
-    if (!nextToken) {
-      throw new Error('Authentication token missing in response.')
+    if (nextToken) {
+      localStorage.setItem('token', nextToken)
+      setToken(nextToken)
     }
-    localStorage.setItem('token', nextToken)
-    setToken(nextToken)
+    return nextToken
   }, [])
 
   const login = useCallback(
@@ -25,14 +25,11 @@ export const AuthProvider = ({ children }) => {
     [handleAuthSuccess],
   )
 
-  const register = useCallback(
-    async (payload) => {
-      const data = await registerUser(payload)
-      handleAuthSuccess(data)
-      return data
-    },
-    [handleAuthSuccess],
-  )
+  const register = useCallback(async (payload) => {
+    const data = await registerUser(payload)
+    handleAuthSuccess(data)
+    return data
+  }, [handleAuthSuccess])
 
   const logout = useCallback(() => {
     localStorage.removeItem('token')

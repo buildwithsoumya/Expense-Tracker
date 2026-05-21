@@ -22,7 +22,7 @@ import {
 } from '../services/analyticsService'
 import { formatCurrency } from '../utils/format'
 
-const palette = ['#0066ff', '#7000ff', '#b3c5ff', '#d1bcff', '#c6c6c6']
+const palette = ['#f5f5f5', '#d4d4d8', '#a1a1aa', '#71717a', '#52525b']
 
 const Analytics = () => {
   const [breakdown, setBreakdown] = useState([])
@@ -68,7 +68,7 @@ const Analytics = () => {
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="glass-card glass-highlight p-6">
+            <div className="glass-card p-6">
               <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">
                 Total Spend
               </p>
@@ -76,7 +76,7 @@ const Analytics = () => {
                 {formatCurrency(overview?.total_expense ?? 0)}
               </p>
             </div>
-            <div className="glass-card glass-highlight p-6">
+            <div className="glass-card p-6">
               <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">
                 Total Transactions
               </p>
@@ -84,7 +84,7 @@ const Analytics = () => {
                 {overview?.total_transactions ?? 0}
               </p>
             </div>
-            <div className="glass-card glass-highlight p-6">
+            <div className="glass-card p-6">
               <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">
                 Active Categories
               </p>
@@ -97,16 +97,16 @@ const Analytics = () => {
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={breakdown}>
-                    <XAxis dataKey="category" stroke="#8c90a1" />
-                    <YAxis stroke="#8c90a1" />
+                    <XAxis dataKey="category" stroke="#a1a1aa" />
+                    <YAxis stroke="#a1a1aa" />
                     <Tooltip
                       contentStyle={{
-                        background: '#131313',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#e2e2e2',
+                        background: '#111111',
+                        border: '1px solid rgba(245,245,245,0.12)',
+                        color: '#f5f5f5',
                       }}
                     />
-                    <Bar dataKey="amount" fill="#0066ff" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="amount" fill="#f5f5f5" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -116,16 +116,16 @@ const Analytics = () => {
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trend}>
-                    <XAxis dataKey="month" stroke="#8c90a1" />
-                    <YAxis stroke="#8c90a1" />
+                    <XAxis dataKey="month" stroke="#a1a1aa" />
+                    <YAxis stroke="#a1a1aa" />
                     <Tooltip
                       contentStyle={{
-                        background: '#131313',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#e2e2e2',
+                        background: '#111111',
+                        border: '1px solid rgba(245,245,245,0.12)',
+                        color: '#f5f5f5',
                       }}
                     />
-                    <Line type="monotone" dataKey="total" stroke="#7000ff" strokeWidth={2} />
+                    <Line type="monotone" dataKey="total" stroke="#f5f5f5" strokeWidth={1.5} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -152,9 +152,9 @@ const Analytics = () => {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: '#131313',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      color: '#e2e2e2',
+                      background: '#111111',
+                      border: '1px solid rgba(245,245,245,0.12)',
+                      color: '#f5f5f5',
                     }}
                   />
                 </PieChart>

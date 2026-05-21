@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import useAuth from '../hooks/useAuth'
+import Logo from '../components/Logo'
 
 const Login = () => {
   const { login, isAuthenticated } = useAuth()
@@ -38,19 +39,24 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-ink text-silver">
-      <div className="pointer-events-none fixed inset-0 bg-radial-blue opacity-60" />
-      <div className="pointer-events-none fixed inset-0 bg-radial-purple opacity-60" />
-      <div className="relative mx-auto flex min-h-screen max-w-5xl items-center px-6 py-10">
+      <div className="relative mx-auto max-w-6xl px-2 pt-6">
+        <Logo
+          variant="compact"
+          className="text-silver -ml-3"
+          markClassName="h-10 w-10"
+          wordmarkClassName="text-lg"
+        />
+      </div>
+      <div className="mx-auto flex min-h-screen max-w-5xl items-start justify-center px-6 py-10">
         <motion.div
-          className="glass-panel glass-highlight w-full max-w-lg p-8"
+          className="glass-panel w-full max-w-xl rounded-none px-10 py-14 mt-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">Welcome back</p>
-          <h1 className="mt-2 text-3xl font-semibold">Sign into Expense Vault</h1>
-          <p className="mt-2 text-sm text-silver-muted">
-            Access your AI-powered expense intelligence.
+          <p className="text-2xl font-bold uppercase tracking-[0.25em] text-silver">
+            Welcome back
           </p>
+          <p className="mt-3 text-sm text-silver-muted">Access your expense dashboard.</p>
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
             <Input
               label="Email"
@@ -71,16 +77,16 @@ const Login = () => {
               required
             />
             {error && <p className="text-sm text-red-300">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Enter the Vault'}
+            <Button type="submit" className="w-full btn-slide" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+            <p className="text-center text-sm text-silver-muted">
+              Don&apos;t have an account?{' '}
+              <Link to="/register" className="font-semibold text-silver hover:text-white">
+                Create one.
+              </Link>
+            </p>
           </form>
-          <p className="mt-6 text-sm text-silver-muted">
-            New here?{' '}
-            <Link to="/register" className="text-electric-blue hover:text-white">
-              Create your account
-            </Link>
-          </p>
         </motion.div>
       </div>
     </div>
