@@ -6,6 +6,9 @@ export const getCategories = async () => {
 }
 
 export const addCategory = async (payload) => {
-  const response = await api.post('/categories/add', payload)
+  const categoryName = payload?.category_name ?? payload?.name
+  const response = await api.post('/categories/add', {
+    category_name: categoryName,
+  })
   return response.data
 }

@@ -18,6 +18,7 @@ from app.schemas.expense_schema import (
 )
 
 from app.models.expense_model import Expense
+from app.models.category_model import Category
 
 from app.auth.auth_bearer import JWTBearer
 
@@ -72,11 +73,28 @@ def get_expenses(
     db: Session = Depends(get_db)
 ):
 
-    expenses = db.query(Expense).filter(
+    expenses = db.query(
+        Expense,
+        Category.category_name
+    ).join(
+        Category,
+        Expense.category_id == Category.category_id
+    ).filter(
         Expense.user_id == payload["user_id"]
     ).all()
 
-    return expenses
+    return [
+        {
+            "expense_id": expense.expense_id,
+            "category_id": expense.category_id,
+            "category_name": category_name,
+            "amount": expense.amount,
+            "description": expense.description,
+            "payment_method": expense.payment_method,
+            "expense_date": expense.expense_date
+        }
+        for expense, category_name in expenses
+    ]
 
 
 # UPDATE EXPENSE
@@ -181,7 +199,13 @@ def filter_expenses(
     db: Session = Depends(get_db)
 ):
 
-    query = db.query(Expense).filter(
+    query = db.query(
+        Expense,
+        Category.category_name
+    ).join(
+        Category,
+        Expense.category_id == Category.category_id
+    ).filter(
         Expense.user_id == payload["user_id"]
     )
 
@@ -215,4 +239,15 @@ def filter_expenses(
 
     expenses = query.all()
 
-    return expenses
+    return [
+        {
+            "expense_id": expense.expense_id,
+            "category_id": expense.category_id,
+            "category_name": category_name,
+            "amount": expense.amount,
+            "description": expense.description,
+            "payment_method": expense.payment_method,
+            "expense_date": expense.expense_date
+        }
+        for expense, category_name in expenses
+    ]

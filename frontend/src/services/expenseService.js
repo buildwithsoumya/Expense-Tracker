@@ -6,6 +6,7 @@ const normalizeExpensePayload = (payload) => {
     description,
     category,
     category_id,
+    payment_method,
     date,
     expense_date,
     amount,
@@ -19,10 +20,17 @@ const normalizeExpensePayload = (payload) => {
         : undefined
   const resolvedAmount =
     amount !== undefined && amount !== '' ? Number(amount) : amount
+  const trimmedPayment =
+    typeof payment_method === 'string' ? payment_method.trim() : payment_method
+  const normalizedPayment =
+    typeof trimmedPayment === 'string' && trimmedPayment.toLowerCase() === 'card'
+      ? 'Credit Card'
+      : trimmedPayment
   return {
     ...rest,
     description: description ?? title ?? '',
     category_id: Number.isFinite(resolvedCategory) ? resolvedCategory : undefined,
+    payment_method: normalizedPayment,
     expense_date: expense_date ?? date ?? '',
     amount: Number.isFinite(resolvedAmount) ? resolvedAmount : amount,
   }

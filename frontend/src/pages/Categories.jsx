@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
 import Button from '../components/Button'
 import Modal from '../components/Modal'
@@ -31,11 +31,22 @@ const Categories = () => {
     fetchCategories()
   }, [])
 
+  const visibleCategories = useMemo(() => {
+    const seen = new Set()
+    return categories.filter((category) => {
+      const categoryName = (category.category_name ?? category.name ?? category.title ?? '').trim()
+      const key = categoryName.toLowerCase()
+      if (!key || seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [categories])
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     try {
       setLoading(true)
-      await addCategory({ name })
+      await addCategory({ category_name: name })
       setName('')
       setModalOpen(false)
       fetchCategories()
@@ -67,11 +78,14 @@ const Categories = () => {
         <EmptyState title="No categories" description="Create your first category." />
       ) : (
         <div className="grid grid-auto-fit gap-4">
-          {categories.map((category) => (
-            <div key={category.id ?? category.name} className="glass-card p-6">
+          {visibleCategories.map((category) => (
+            <div
+              key={category.category_id ?? category.id ?? category.category_name ?? category.name}
+              className="glass-card p-6"
+            >
               <p className="text-xs uppercase tracking-[0.2em] text-silver-muted">Category</p>
               <h3 className="mt-3 text-lg font-semibold text-silver">
-                {category.name ?? category.title}
+                {category.category_name ?? category.name ?? category.title}
               </h3>
             </div>
           ))}

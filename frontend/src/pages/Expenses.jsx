@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Plus, Filter } from 'lucide-react'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import Select from '../components/Select'
 import Modal from '../components/Modal'
 import Loader from '../components/Loader'
 import EmptyState from '../components/EmptyState'
@@ -14,6 +15,7 @@ import {
   getExpenses,
   updateExpense,
 } from '../services/expenseService'
+import { getCategories } from '../services/categoryService'
 
 const defaultForm = {
   title: '',
@@ -27,6 +29,9 @@ const Expenses = () => {
   const [expenses, setExpenses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [categories, setCategories] = useState([])
+  const [categoryError, setCategoryError] = useState('')
+  const [categoriesLoading, setCategoriesLoading] = useState(false)
   const [filters, setFilters] = useState({
     search: '',
     category: '',
@@ -54,6 +59,74 @@ const Expenses = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchExpenses()
   }, [])
+
+  const fetchCategories = async () => {
+    try {
+      setCategoriesLoading(true)
+      const data = await getCategories()
+      setCategories(data ?? [])
+      setCategoryError('')
+    } catch (err) {
+      setCategoryError(
+        err?.response?.data?.detail ?? err.message ?? 'Failed to load categories.',
+      )
+    } finally {
+      setCategoriesLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    if (modalOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchCategories()
+    }
+  }, [modalOpen])
+
+  const visibleCategories = useMemo(() => {
+    const seen = new Set()
+    return categories.filter((category) => {
+      const categoryName = (category.category_name ?? category.name ?? category.title ?? '').trim()
+      const key = categoryName.toLowerCase()
+      if (!key || seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [categories])
+
+  const categoriesById = useMemo(() => {
+    const map = new Map()
+    visibleCategories.forEach((category) => {
+      const categoryId = category.category_id ?? category.id
+      const categoryName = category.category_name ?? category.name ?? category.title
+      if (categoryId !== undefined && categoryName) {
+        map.set(Number(categoryId), categoryName)
+      }
+    })
+    return map
+  }, [visibleCategories])
+
+  const displayExpenses = useMemo(
+    () =>
+      expenses.map((expense) => {
+        const id = expense.id ?? expense.expense_id
+        const categoryId = expense.category_id
+        const categoryName = Number.isFinite(Number(categoryId))
+          ? categoriesById.get(Number(categoryId))
+          : undefined
+        return {
+          ...expense,
+          id,
+          date: expense.date ?? expense.expense_date,
+          category: categoryName ?? expense.category ?? expense.category_name ?? expense.category_id,
+        }
+      }),
+    [categoriesById, expenses],
+  )
 
   const activeFilters = useMemo(
     () => {
@@ -112,7 +185,7 @@ const Expenses = () => {
     try {
       setLoading(true)
       if (editTarget) {
-        await updateExpense(editTarget.id, form)
+        await updateExpense(editTarget.id ?? editTarget.expense_id, form)
       } else {
         await addExpense(form)
       }
@@ -126,7 +199,7 @@ const Expenses = () => {
   const handleDelete = async (expense) => {
     try {
       setLoading(true)
-      await deleteExpense(expense.id)
+      await deleteExpense(expense.id ?? expense.expense_id)
       fetchExpenses(Object.keys(activeFilters).length ? activeFilters : undefined)
     } catch (err) {
       setError(err?.response?.data?.detail ?? err.message ?? 'Failed to delete expense.')
@@ -196,15 +269,15 @@ const Expenses = () => {
 
       {loading ? (
         <Loader label="Loading expenses" />
-      ) : expenses.length === 0 ? (
+      ) : displayExpenses.length === 0 ? (
         <EmptyState title="No expenses" description="Start logging your spending." />
       ) : (
         <>
           <div className="hidden md:block">
-            <ExpenseTable expenses={expenses} onEdit={openEditModal} onDelete={handleDelete} />
+            <ExpenseTable expenses={displayExpenses} onEdit={openEditModal} onDelete={handleDelete} />
           </div>
           <div className="grid gap-4 md:hidden">
-            {expenses.map((expense) => (
+            {displayExpenses.map((expense) => (
               <ExpenseCard
                 key={expense.id}
                 expense={expense}
@@ -239,21 +312,46 @@ const Expenses = () => {
             onChange={handleFormChange}
             required
           />
-          <Input
-            label="Category ID"
+          <Select
+            label="Category"
             name="category_id"
-            placeholder="1"
             value={form.category_id}
             onChange={handleFormChange}
             required
-          />
-          <Input
+            disabled={categoriesLoading}
+          >
+            <option value="" disabled>
+              {categoriesLoading
+                ? 'Loading categories...'
+                : categories.length === 0
+                  ? 'No categories available'
+                  : 'Select category'}
+            </option>
+            {visibleCategories.map((category) => {
+              const categoryId = category.category_id ?? category.id
+              const categoryName = category.category_name ?? category.name ?? category.title
+              if (categoryId === undefined) return null
+              return (
+                <option key={categoryId} value={categoryId}>
+                  {categoryName ?? `Category ${categoryId}`}
+                </option>
+              )
+            })}
+          </Select>
+          {categoryError && <p className="text-xs text-red-400">{categoryError}</p>}
+          <Select
             label="Payment Method"
             name="payment_method"
-            placeholder="Card"
             value={form.payment_method}
             onChange={handleFormChange}
-          />
+          >
+            <option value="">Select payment</option>
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Net Banking">Net Banking</option>
+          </Select>
           <Input
             label="Expense Date"
             type="date"

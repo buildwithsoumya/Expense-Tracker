@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import {
-  TrendingUp,
-  CreditCard,
-  Sparkles,
-  Wallet,
-  Plus,
-} from 'lucide-react'
+import { TrendingUp, CreditCard, Wallet } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -19,10 +13,7 @@ import {
 } from 'recharts'
 import DashboardCard from '../components/DashboardCard'
 import ChartCard from '../components/ChartCard'
-import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
-import Modal from '../components/Modal'
-import Input from '../components/Input'
 import {
   getOverview,
   getCategoryBreakdown,
@@ -30,7 +21,6 @@ import {
   getTopCategory,
   getRecentTransactions,
 } from '../services/analyticsService'
-import { addExpense } from '../services/expenseService'
 import { formatCurrency, formatDate } from '../utils/format'
 
 const palette = ['#f5f5f5', '#d4d4d8', '#a1a1aa', '#71717a', '#52525b']
@@ -42,16 +32,6 @@ const Dashboard = () => {
   const [topCategory, setTopCategory] = useState(null)
   const [recent, setRecent] = useState([])
   const [error, setError] = useState('')
-  const [quickAddOpen, setQuickAddOpen] = useState(false)
-  const [quickAddForm, setQuickAddForm] = useState({
-    title: '',
-    amount: '',
-    category_id: '',
-    payment_method: '',
-    expense_date: '',
-  })
-  const [quickAddError, setQuickAddError] = useState('')
-  const [quickAddLoading, setQuickAddLoading] = useState(false)
 
   const getErrorMessage = (err, fallback) => {
     const detail = err?.response?.data?.detail
@@ -94,32 +74,6 @@ const Dashboard = () => {
     fetchData()
   }, [fetchData])
 
-  const handleQuickAddChange = (event) => {
-    setQuickAddForm((prev) => ({ ...prev, [event.target.name]: event.target.value }))
-  }
-
-  const handleQuickAddSubmit = async (event) => {
-    event.preventDefault()
-    setQuickAddError('')
-    setQuickAddLoading(true)
-    try {
-      await addExpense(quickAddForm)
-      setQuickAddOpen(false)
-      setQuickAddForm({
-        title: '',
-        amount: '',
-        category_id: '',
-        payment_method: '',
-        expense_date: '',
-      })
-      await fetchData()
-    } catch (err) {
-      setQuickAddError(getErrorMessage(err, 'Failed to add expense.'))
-    } finally {
-      setQuickAddLoading(false)
-    }
-  }
-
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -127,12 +81,6 @@ const Dashboard = () => {
           
           <h1 className="mt-2 text-3xl font-semibold">My Finances</h1>
         </div>
-        <Button onClick={() => setQuickAddOpen(true)} className="whitespace-nowrap btn-slide">
-          <span className="flex items-center gap-2">
-            <Plus size={16} />
-            Add Expense
-          </span>
-        </Button>
       </div>
 
       {error ? (
@@ -266,58 +214,6 @@ const Dashboard = () => {
         </>
       )}
 
-      <Modal
-        open={quickAddOpen}
-        onClose={() => setQuickAddOpen(false)}
-        title="Quick Add Expense"
-      >
-        <form className="space-y-4" onSubmit={handleQuickAddSubmit}>
-          <Input
-            label="Title"
-            name="title"
-            placeholder="Coffee at Celeste"
-            value={quickAddForm.title}
-            onChange={handleQuickAddChange}
-            required
-          />
-          <Input
-            label="Amount"
-            type="number"
-            name="amount"
-            placeholder="420"
-            value={quickAddForm.amount}
-            onChange={handleQuickAddChange}
-            required
-          />
-          <Input
-            label="Category ID"
-            name="category_id"
-            placeholder="1"
-            value={quickAddForm.category_id}
-            onChange={handleQuickAddChange}
-            required
-          />
-          <Input
-            label="Payment Method"
-            name="payment_method"
-            placeholder="Card"
-            value={quickAddForm.payment_method}
-            onChange={handleQuickAddChange}
-          />
-          <Input
-            label="Expense Date"
-            type="date"
-            name="expense_date"
-            value={quickAddForm.expense_date}
-            onChange={handleQuickAddChange}
-            required
-          />
-          {quickAddError && <p className="text-sm text-red-300">{quickAddError}</p>}
-          <Button type="submit" className="w-full btn-slide" disabled={quickAddLoading}>
-            {quickAddLoading ? 'Adding expense...' : 'Add Expense'}
-          </Button>
-        </form>
-      </Modal>
     </div>
   )
 }

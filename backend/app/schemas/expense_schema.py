@@ -21,6 +21,8 @@ class ExpenseResponse(BaseModel):
 
     category_id: int
 
+    category_name: str
+
     amount: float
 
     description: str
