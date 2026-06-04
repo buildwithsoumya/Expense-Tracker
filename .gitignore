@@ -10,7 +10,7 @@ env/
 
 # Environment Variables
 .env
-
+backend/.env
 # VS Code
 .vscode/
 
@@ -39,3 +39,6 @@ htmlcov/
 
 # mypy
 .mypy_cache/
+
+#UI/UX
+frontend/UI-UX/

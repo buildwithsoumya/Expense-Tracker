@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import (
     APIRouter,
     Depends,
@@ -17,6 +18,7 @@ from app.schemas.expense_schema import (
 )
 
 from app.models.expense_model import Expense
+from app.models.category_model import Category
 
 from app.auth.auth_bearer import JWTBearer
 
@@ -71,11 +73,28 @@ def get_expenses(
     db: Session = Depends(get_db)
 ):
 
-    expenses = db.query(Expense).filter(
+    expenses = db.query(
+        Expense,
+        Category.category_name
+    ).join(
+        Category,
+        Expense.category_id == Category.category_id
+    ).filter(
         Expense.user_id == payload["user_id"]
     ).all()
 
-    return expenses
+    return [
+        {
+            "expense_id": expense.expense_id,
+            "category_id": expense.category_id,
+            "category_name": category_name,
+            "amount": expense.amount,
+            "description": expense.description,
+            "payment_method": expense.payment_method,
+            "expense_date": expense.expense_date
+        }
+        for expense, category_name in expenses
+    ]
 
 
 # UPDATE EXPENSE
@@ -163,3 +182,72 @@ def monthly_summary(
         "month": month,
         "total_expense": total or 0
     }
+
+@router.get("/filter")
+def filter_expenses(
+
+    category_id: int = None,
+
+    payment_method: str = None,
+
+    start_date: date = None,
+
+    end_date: date = None,
+
+    payload=Depends(JWTBearer()),
+
+    db: Session = Depends(get_db)
+):
+
+    query = db.query(
+        Expense,
+        Category.category_name
+    ).join(
+        Category,
+        Expense.category_id == Category.category_id
+    ).filter(
+        Expense.user_id == payload["user_id"]
+    )
+
+    # FILTER BY CATEGORY
+    if category_id:
+
+        query = query.filter(
+            Expense.category_id == category_id
+        )
+
+    # FILTER BY PAYMENT METHOD
+    if payment_method:
+
+        query = query.filter(
+            Expense.payment_method == payment_method
+        )
+
+    # FILTER BY START DATE
+    if start_date:
+
+        query = query.filter(
+            Expense.expense_date >= start_date
+        )
+
+    # FILTER BY END DATE
+    if end_date:
+
+        query = query.filter(
+            Expense.expense_date <= end_date
+        )
+
+    expenses = query.all()
+
+    return [
+        {
+            "expense_id": expense.expense_id,
+            "category_id": expense.category_id,
+            "category_name": category_name,
+            "amount": expense.amount,
+            "description": expense.description,
+            "payment_method": expense.payment_method,
+            "expense_date": expense.expense_date
+        }
+        for expense, category_name in expenses
+    ]
