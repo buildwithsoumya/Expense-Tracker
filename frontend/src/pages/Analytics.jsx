@@ -22,7 +22,7 @@ import {
 } from '../services/analyticsService'
 import { formatCurrency } from '../utils/format'
 
-const palette = ['#f5f5f5', '#d4d4d8', '#a1a1aa', '#71717a', '#52525b']
+const palette = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#14b8a6']
 
 const Analytics = () => {
   const [breakdown, setBreakdown] = useState([])
@@ -41,7 +41,12 @@ const Analytics = () => {
           getMonthlyTrend(),
           getOverview(),
         ])
-        setBreakdown(breakdownData ?? [])
+        setBreakdown(
+          (breakdownData ?? []).map((item) => ({
+            category: item.category ?? item.name,
+            amount: item.amount ?? item.total ?? item.value ?? 0,
+          })),
+        )
         setTrend(trendData ?? [])
         setOverview(overviewData)
       } catch (err) {
@@ -106,7 +111,11 @@ const Analytics = () => {
                         color: '#f5f5f5',
                       }}
                     />
-                    <Bar dataKey="amount" fill="#f5f5f5" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
+                      {breakdown.map((_, index) => (
+                        <Cell key={index} fill={palette[index % palette.length]} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -125,7 +134,7 @@ const Analytics = () => {
                         color: '#f5f5f5',
                       }}
                     />
-                    <Line type="monotone" dataKey="total" stroke="#f5f5f5" strokeWidth={1.5} />
+                    <Line type="monotone" dataKey="total" stroke="#38bdf8" strokeWidth={1.5} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

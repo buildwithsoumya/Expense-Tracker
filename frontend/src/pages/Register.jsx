@@ -9,7 +9,12 @@ import Logo from '../components/Logo'
 const Register = () => {
   const { register, login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ full_name: '', email: '', password: '' })
+  const [form, setForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -64,15 +69,26 @@ const Register = () => {
             Join SmartSpend AI to start tracking smarter.
           </p>
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
-            <Input
-              label="Full Name"
-              type="text"
-              name="full_name"
-              placeholder="Ava Sterling"
-              value={form.full_name}
-              onChange={handleChange}
-              required
-            />
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input
+                label="First Name"
+                type="text"
+                name="first_name"
+                placeholder="Ava"
+                value={form.first_name}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                label="Last Name"
+                type="text"
+                name="last_name"
+                placeholder="Sterling"
+                value={form.last_name}
+                onChange={handleChange}
+                required
+              />
+            </div>
             <Input
               label="Email"
               type="email"

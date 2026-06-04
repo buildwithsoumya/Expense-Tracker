@@ -49,7 +49,8 @@ def register_user(
     hashed_pw = hash_password(user.password)
 
     new_user = User(
-        full_name=user.full_name,
+        first_name=user.first_name,
+        last_name=user.last_name,
         email=user.email,
         password_hash=hashed_pw
     )
