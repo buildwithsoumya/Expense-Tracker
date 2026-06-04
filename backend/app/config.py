@@ -18,5 +18,7 @@ class Settings:
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
     )
 
+    ADMIN_SECRET = os.getenv("ADMIN_SECRET", "admin_super_secret_key_2026")
+
 
 settings = Settings()
