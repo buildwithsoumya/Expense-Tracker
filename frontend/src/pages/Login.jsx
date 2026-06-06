@@ -76,6 +76,14 @@ const Login = () => {
               onChange={handleChange}
               required
             />
+            <div className="flex justify-end -mt-2">
+              <Link
+                to="/forgot-password"
+                className="text-xs text-silver-muted hover:text-silver transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
             {error && <p className="text-sm text-red-300">{error}</p>}
             <Button type="submit" className="w-full btn-slide" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}

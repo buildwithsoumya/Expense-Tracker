@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getUsers, updateUser, deleteUser } from '../api/adminApi';
 import UserTable from '../components/UserTable';
 
 export default function Users() {
-  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -54,10 +52,6 @@ export default function Users() {
     }
   };
 
-  const handleViewExpenses = (userId) => {
-    navigate(`/expenses?user_id=${userId}`);
-  };
-
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Page Header */}
@@ -85,7 +79,6 @@ export default function Users() {
         onPageChange={setPage}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onViewExpenses={handleViewExpenses}
         loading={loading}
       />
 

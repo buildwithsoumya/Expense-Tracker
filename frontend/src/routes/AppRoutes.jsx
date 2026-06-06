@@ -7,6 +7,8 @@ import Loader from '../components/Loader'
 const Landing = lazy(() => import('../pages/Landing'))
 const Login = lazy(() => import('../pages/Login'))
 const Register = lazy(() => import('../pages/Register'))
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('../pages/ResetPassword'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
 const Expenses = lazy(() => import('../pages/Expenses'))
 const Analytics = lazy(() => import('../pages/Analytics'))
@@ -20,6 +22,8 @@ const AppRoutes = () => (
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />

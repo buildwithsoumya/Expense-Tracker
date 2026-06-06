@@ -20,5 +20,9 @@ class Settings:
 
     ADMIN_SECRET = os.getenv("ADMIN_SECRET", "admin_super_secret_key_2026")
 
+    EMAIL_SENDER = os.getenv("EMAIL_SENDER", "")
+
+    EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
+
 
 settings = Settings()
