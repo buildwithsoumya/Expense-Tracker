@@ -60,10 +60,27 @@ const Dashboard = () => {
         getRecentTransactions(),
       ])
       setOverview(overviewData)
-      setBreakdown(breakdownData ?? [])
+      setBreakdown(
+        (breakdownData ?? []).map((item) => ({
+          category: item.category ?? item.name,
+          amount: item.amount ?? item.total ?? item.value ?? 0,
+        })),
+      )
       setMonthlyTrend(trendData ?? [])
-      setTopCategory(topData)
-      setRecent(recentData ?? [])
+      setTopCategory({
+        category: topData?.category ?? topData?.top_category,
+        amount: topData?.amount ?? topData?.total_spent ?? 0,
+      })
+      setRecent(
+        (recentData ?? []).map((item) => ({
+          id: item.id ?? item.expense_id,
+          title: item.title ?? item.description,
+          description: item.description,
+          category: item.category ?? item.category_name,
+          date: item.date ?? item.expense_date,
+          amount: item.amount,
+        })),
+      )
     } catch (err) {
       setError(getErrorMessage(err, 'Failed to load analytics.'))
     }
@@ -174,7 +191,7 @@ const Dashboard = () => {
                 {recent.length === 0 ? (
                   <p className="text-sm text-silver-muted">No recent transactions.</p>
                 ) : (
-                  recent.slice(0, 5).map((item) => (
+                  recent.slice(0, 3).map((item) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between border border-glass-border bg-graphite/50 px-4 py-3"

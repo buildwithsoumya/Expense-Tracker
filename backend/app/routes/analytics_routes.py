@@ -51,7 +51,7 @@ def category_breakdown(
     return [
         {
             "category": row[0],
-            "total": float(row[1])
+            "amount": float(row[1])
         }
 
         for row in result
@@ -130,8 +130,8 @@ def top_category(
         }
 
     return {
-        "top_category": result[0],
-        "total_spent": float(result[1])
+        "category": result[0],
+        "amount": float(result[1])
     }
 
 
@@ -142,17 +142,29 @@ def recent_transactions(
     db: Session = Depends(get_db)
 ):
 
-    expenses = db.query(Expense).filter(
-
+    expenses = db.query(
+        Expense,
+        Category.category_name
+    ).join(
+        Category,
+        Expense.category_id == Category.category_id
+    ).filter(
         Expense.user_id == payload["user_id"]
-
     ).order_by(
-
         Expense.expense_date.desc()
+    ).limit(3).all()
 
-    ).limit(5).all()
-
-    return expenses
+    return [
+        {
+            "expense_id": expense.expense_id,
+            "category": category_name,
+            "amount": expense.amount,
+            "description": expense.description,
+            "payment_method": expense.payment_method,
+            "expense_date": expense.expense_date
+        }
+        for expense, category_name in expenses
+    ]
 
 
 # TOTAL EXPENSE OVERVIEW

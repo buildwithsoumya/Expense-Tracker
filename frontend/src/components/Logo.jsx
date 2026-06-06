@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const LogoMark = ({ className = '' }) => (
   <svg
@@ -73,23 +74,25 @@ const Logo = ({
   }
 
   return (
-    <Wrapper
-      className={className}
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={disableHover ? undefined : { opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {responsive ? (
-        <>
-          <div className="hidden lg:flex">{variants.full}</div>
-          <div className="hidden sm:flex lg:hidden">{variants.compact}</div>
-          <div className="flex sm:hidden">{variants.icon}</div>
-        </>
-      ) : (
-        variants[variant]
-      )}
-    </Wrapper>
+    <Link to="/" className="cursor-pointer">
+      <Wrapper
+        className={className}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={disableHover ? undefined : { opacity: 0.8 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {responsive ? (
+          <>
+            <div className="hidden lg:flex">{variants.full}</div>
+            <div className="hidden sm:flex lg:hidden">{variants.compact}</div>
+            <div className="flex sm:hidden">{variants.icon}</div>
+          </>
+        ) : (
+          variants[variant]
+        )}
+      </Wrapper>
+    </Link>
   )
 }
 

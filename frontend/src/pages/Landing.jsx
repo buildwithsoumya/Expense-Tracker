@@ -42,12 +42,12 @@ const Landing = () => (
             Less clutter. Better financial decisions.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/register">
+            <Link to="/login">
               <Button className="btn-slide">
                 Sign In <ArrowRight size={16} />
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/register">
               <Button variant="secondary" className="btn-slide">
                 Get Started
               </Button>

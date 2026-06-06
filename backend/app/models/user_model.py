@@ -14,8 +14,13 @@ class User(Base):
         index=True
     )
 
-    full_name = Column(
-        String(100),
+    first_name = Column(
+        String(50),
+        nullable=False
+    )
+
+    last_name = Column(
+        String(50),
         nullable=False
     )
 

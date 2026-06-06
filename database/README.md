@@ -8,7 +8,8 @@ This folder contains the SQL files you need to create the schema and load sample
 
 **users**
 - `user_id` (PK, auto increment)
-- `full_name`
+- `first_name`
+- `last_name`
 - `email` (unique)
 - `password_hash`
 - `created_at`

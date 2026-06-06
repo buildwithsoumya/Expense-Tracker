@@ -9,10 +9,10 @@ USE expense_tracker;
 -- Sample users
 -- Password hashes are placeholders for demo purposes
 -- ------------------------------------------------------------
-INSERT INTO users (full_name, email, password_hash)
+INSERT INTO users (first_name, last_name, email, password_hash)
 VALUES
-  ('Aarav Sharma', 'aarav.sharma@example.com', '$2b$12$Qv7J0r5aS1N4Y0kH7Qm8fOxQxLr8aU6l3XvQm1p6s6E2M1uXy0jRm'),
-  ('Diya Iyer', 'diya.iyer@example.com', '$2b$12$R1x2b8mPz2QeT7o2L7m0hOuCz8m9jT1a2m3n4p5q6r7s8t9u0v1w');
+  ('Aarav', 'Sharma', 'aarav.sharma@example.com', '$2b$12$Qv7J0r5aS1N4Y0kH7Qm8fOxQxLr8aU6l3XvQm1p6s6E2M1uXy0jRm'),
+  ('Diya', 'Iyer', 'diya.iyer@example.com', '$2b$12$R1x2b8mPz2QeT7o2L7m0hOuCz8m9jT1a2m3n4p5q6r7s8t9u0v1w');
 
 -- ------------------------------------------------------------
 -- Custom categories (user-specific)
