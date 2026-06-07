@@ -1,16 +1,49 @@
-# Expense Tracker — Admin Dashboard
+# SmartSpend AI — Admin Dashboard
 
-A standalone admin panel for managing the Expense Tracker platform. Built with React + Vite + Tailwind CSS v4.
+> A secure, standalone admin panel for managing the SmartSpend AI platform. Full visibility into users, expenses, and platform health — with live data editing and export tools.
 
-## Features
+---
 
-- **Dashboard** — Stats overview with charts (category breakdown, daily activity, top spenders)
-- **User Management** — View, edit, delete users; navigate to their expenses
-- **Expense Management** — Filter, inline-edit, bulk delete, CSV export
-- **Data Explorer** — Raw table view with sortable columns, JSON viewer, field patching
-- **DB Operations** — Run schema migrations, seed data, clear user data with terminal-style log
+## ✅ Features
 
-## Setup
+### 📊 Dashboard
+- Platform-wide stats: total users, total expenses, total spend, avg per user
+- Top spenders leaderboard
+- Category breakdown chart
+- Daily activity bar chart
+
+### 👤 User Management
+- Paginated user list with spend totals and transaction counts
+- **Inline expense drawer** — click the `⌄` chevron on any user row to expand their expenses in-place
+- Edit user details (name, email) via modal
+- Delete user with cascade confirmation
+
+### 💸 Expense Management (Expenses Page)
+- Search and filter by: User ID, Category, Date Range, Min/Max Amount
+- Inline edit expenses
+- Bulk select and delete
+- CSV export (with active filters applied)
+
+### 🔍 Raw Data Explorer
+- Live table view of any database table
+- Sortable columns
+- JSON record inspector
+- Individual field patching without running SQL
+
+### 🛠️ DB Operations
+- Terminal-style SQL script runner
+- Seed data utilities
+- Clear individual user data
+
+---
+
+## 🔐 Security
+
+All admin API endpoints require the `x-admin-secret` header. This is set automatically from your `.env` file. Keep the secret strong — it's the only protection on the admin API.
+
+---
+
+## ⚙️ Setup
 
 ### 1. Install dependencies
 
@@ -21,67 +54,54 @@ npm install
 
 ### 2. Configure environment
 
-Copy the example env file and update the values:
-
 ```bash
 cp .env.example .env
 ```
 
+Edit `.env`:
+
 ```env
 VITE_API_URL=http://localhost:8001
-VITE_ADMIN_SECRET=admin_super_secret_key_2026
+VITE_ADMIN_SECRET=your_admin_secret_key
 ```
 
-### 3. Configure backend
+The `ADMIN_SECRET` in the backend `.env` must match `VITE_ADMIN_SECRET` here.
 
-Make sure the backend `.env` has the matching `ADMIN_SECRET`:
-
-```env
-ADMIN_SECRET=admin_super_secret_key_2026
-```
-
-### 4. Run the admin dashboard
+### 3. Run the dashboard
 
 ```bash
 npm run dev
 ```
 
-The dashboard will be available at `http://localhost:5173` (or next available port).
+Available at: `http://localhost:5174` (or next available port)
 
-### 5. Login
+---
 
-Use the following credentials:
-
-| Field    | Value         |
-|----------|---------------|
-| User ID  | `admin`       |
-| Password | `password123` |
-
-## Architecture
+## 📁 Folder Structure
 
 ```
 admin/
 ├── src/
 │   ├── api/
-│   │   └── adminApi.js        # Axios API layer
+│   │   └── adminApi.js           # Axios API layer with admin secret header
 │   ├── components/
-│   │   ├── Sidebar.jsx        # Navigation sidebar
-│   │   ├── Modal.jsx          # Reusable modal
-│   │   ├── StatsCards.jsx     # Animated stat cards
-│   │   ├── Charts.jsx         # Recharts visualizations
-│   │   ├── UserTable.jsx      # User management table
-│   │   ├── ExpenseTable.jsx   # Expense table with inline edit
-│   │   ├── RawDataExplorer.jsx # Sortable data table + JSON viewer
-│   │   └── DBOperationsPanel.jsx # Terminal-style DB ops
+│   │   ├── Sidebar.jsx            # Navigation sidebar
+│   │   ├── Modal.jsx              # Reusable modal
+│   │   ├── StatsCards.jsx         # Animated stat cards
+│   │   ├── Charts.jsx             # Recharts visualisations
+│   │   ├── UserTable.jsx          # User table + inline expense drawer
+│   │   ├── ExpenseTable.jsx       # Expense table with inline edit
+│   │   ├── RawDataExplorer.jsx    # Live data table + JSON viewer
+│   │   └── DBOperationsPanel.jsx  # Terminal-style DB ops
 │   ├── pages/
 │   │   ├── Dashboard.jsx
 │   │   ├── Users.jsx
-│   │   ├── Expenses.jsx
+│   │   ├── Expenses.jsx           # Filter/search-focused expense view
 │   │   ├── DataExplorer.jsx
 │   │   └── DBOps.jsx
-│   ├── App.jsx                # Login gate + layout + routing
-│   ├── main.jsx               # React entry point
-│   └── index.css              # Tailwind v4 + design system
+│   ├── App.jsx                    # Login gate + layout + routing
+│   ├── main.jsx
+│   └── index.css                  # Tailwind v4 + design tokens
 ├── index.html
 ├── package.json
 ├── vite.config.js
@@ -89,31 +109,56 @@ admin/
 └── .env.example
 ```
 
-## Backend Endpoints
+---
 
-All admin endpoints are mounted at `/admin` and require the `x-admin-secret` header.
+## 🔌 Admin API Reference
 
-| Method | Endpoint                       | Description                    |
-|--------|-------------------------------|--------------------------------|
-| GET    | `/admin/users`                | Paginated user list            |
-| GET    | `/admin/users/:id/expenses`   | User's expenses                |
-| PUT    | `/admin/users/:id`            | Update user                    |
-| DELETE | `/admin/users/:id`            | Delete user + cascade          |
-| GET    | `/admin/expenses`             | Filtered expense list          |
-| PUT    | `/admin/expenses/:id`         | Update expense                 |
-| DELETE | `/admin/expenses/:id`         | Delete expense                 |
-| POST   | `/admin/expenses/bulk-delete` | Bulk delete                    |
-| GET    | `/admin/expenses/export`      | CSV export                     |
-| GET    | `/admin/categories`           | All categories                 |
-| GET    | `/admin/stats`                | Dashboard statistics           |
-| POST   | `/admin/db/run-script`        | Execute SQL script             |
-| DELETE | `/admin/db/clear-user/:id`    | Clear user data                |
-| POST   | `/admin/patch-field`          | Patch individual record field  |
+All endpoints are mounted at `/admin` and require the `x-admin-secret` header.
 
-## Tech Stack
+### Users
 
-- **React 19** + **Vite 8**
-- **Tailwind CSS v4** (CSS-first config)
-- **Recharts** (data visualization)
-- **Axios** (HTTP client)
-- **React Router v7** (client-side routing)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/admin/users` | Paginated user list with stats |
+| GET | `/admin/users/:id/expenses` | All expenses for a specific user |
+| PUT | `/admin/users/:id` | Update user name / email |
+| DELETE | `/admin/users/:id` | Delete user + cascade all data |
+
+### Expenses
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/admin/expenses` | Filtered expense list |
+| PUT | `/admin/expenses/:id` | Update expense |
+| DELETE | `/admin/expenses/:id` | Delete expense |
+| POST | `/admin/expenses/bulk-delete` | Bulk delete by IDs |
+| GET | `/admin/expenses/export` | Export as CSV |
+
+### Platform
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/admin/categories` | All categories |
+| GET | `/admin/stats` | Platform-wide stats |
+
+### Database
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/admin/db/run-script` | Execute raw SQL script |
+| DELETE | `/admin/db/clear-user/:id` | Clear all data for a user |
+| POST | `/admin/patch-field` | Patch a single record field live |
+
+---
+
+## 🛠️ Tech Stack
+
+| | |
+|---|---|
+| **Framework** | React 19 |
+| **Build Tool** | Vite |
+| **Routing** | React Router v7 |
+| **Styling** | Tailwind CSS v4 (CSS-first config) |
+| **Charts** | Recharts |
+| **HTTP Client** | Axios |
+| **Theme** | Black + Amber two-tone dark UI |

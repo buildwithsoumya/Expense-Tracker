@@ -1,234 +1,147 @@
-# SmartSpend AI Frontend
+# SmartSpend AI — User Frontend
 
-Frontend application for the SmartSpend AI Expense Tracker platform.
-
-Built using React, Vite, Tailwind CSS, Framer Motion, and Recharts.
-
-This frontend provides a premium fintech-style dashboard inspired by modern SaaS platforms like CRED.club.
+> Premium fintech-style expense dashboard. Dark-themed, glassmorphic, and fast — built for a CRED-level experience.
 
 ---
 
-# Tech Stack
+## ✅ Features
 
-## Core
+### 🔐 Authentication
+- Login & Registration with JWT
+- Protected route guards
+- **Forgot Password** — OTP sent to registered email
+- **Reset Password** — 6-digit code input with resend cooldown and password strength meter
 
-* React
-* Vite
-* React Router DOM
+### 🏠 Dashboard
+- Total spend, monthly average, transaction count cards
+- Monthly trend line chart
+- Category-wise spending breakdown
+- Recent transactions feed
 
-## Styling
+### 💸 Expense Management
+- Add, edit, delete expenses via modal
+- Filter by date range, category, amount
+- Paginated expense list with category badges
 
-* Tailwind CSS
-* Framer Motion
-* Lucide React Icons
+### 📊 Analytics
+- Interactive Recharts visualisations
+- Monthly comparison bar charts
+- Category pie/donut charts
+- Spending insights
 
-## Charts & Analytics
+### 🗂️ Categories
+- Default + user-created custom categories
+- Manage, rename, delete categories
 
-* Recharts
-
-## API Communication
-
-* Axios
-
----
-
-# Features
-
-## Authentication
-
-* User Login
-* User Registration
-* JWT Token Authentication
-* Protected Routes
-
-## Dashboard
-
-* Expense Overview
-* Monthly Trends
-* Category Breakdown
-* Recent Transactions
-* Analytics Cards
-
-## Expense Management
-
-* Add Expense
-* Edit Expense
-* Delete Expense
-* Filter Expenses
-
-## Categories
-
-* Dynamic Categories
-* Custom Category Creation
-
-## Analytics
-
-* Spending Insights
-* Interactive Charts
-* Monthly Reports
+### 🔗 Clickable Logo
+- Logo always navigates back to home page from anywhere in the app
 
 ---
 
-# Design Philosophy
+## 🛠️ Tech Stack
 
-The UI is inspired by:
-
-* CRED.club
-* modern fintech dashboards
-* premium SaaS products
-
-Design characteristics:
-
-* dark premium theme
-* glassmorphism
-* smooth animations
-* responsive layouts
-* minimalistic UI
-* modern typography
+| | |
+|---|---|
+| **Framework** | React 19 |
+| **Build Tool** | Vite |
+| **Routing** | React Router v7 |
+| **Styling** | Tailwind CSS |
+| **Animations** | Framer Motion |
+| **Charts** | Recharts |
+| **Icons** | Lucide React |
+| **HTTP Client** | Axios |
+| **Auth** | JWT stored in localStorage |
 
 ---
 
-# Folder Structure
+## 📁 Folder Structure
 
-```bash
+```
 frontend/
-│
 ├── public/
-│
-├── src/
-│   ├── api/
-│   ├── assets/
-│   ├── components/
-│   ├── context/
-│   ├── hooks/
-│   ├── layouts/
-│   ├── pages/
-│   ├── routes/
-│   ├── services/
-│   ├── styles/
-│   ├── utils/
-│   ├── App.jsx
-│   └── main.jsx
-│
-├── package.json
-├── vite.config.js
-├── tailwind.config.js
-└── README.md
+└── src/
+    ├── api/
+    │   └── axios.js            # Axios instance with JWT interceptor
+    ├── components/
+    │   ├── Button.jsx
+    │   ├── Input.jsx
+    │   ├── Logo.jsx             # Clickable brand logo
+    │   ├── Modal.jsx
+    │   ├── Navbar.jsx
+    │   ├── Sidebar.jsx
+    │   ├── ExpenseTable.jsx
+    │   └── ...
+    ├── context/
+    ├── hooks/
+    │   └── useAuth.js
+    ├── layouts/
+    │   └── AppLayout.jsx
+    ├── pages/
+    │   ├── Landing.jsx
+    │   ├── Login.jsx
+    │   ├── Register.jsx
+    │   ├── ForgotPassword.jsx   # OTP request page
+    │   ├── ResetPassword.jsx    # OTP entry + new password
+    │   ├── Dashboard.jsx
+    │   ├── Expenses.jsx
+    │   ├── Analytics.jsx
+    │   ├── Categories.jsx
+    │   └── Settings.jsx
+    ├── routes/
+    │   ├── AppRoutes.jsx
+    │   └── ProtectedRoute.jsx
+    ├── App.jsx
+    └── main.jsx
 ```
 
 ---
 
-# Installation
-
-## Move into frontend directory
+## ⚙️ Setup
 
 ```bash
 cd frontend
-```
-
----
-
-# Install Dependencies
-
-```bash
 npm install
-```
-
----
-
-# Run Development Server
-
-```bash
 npm run dev
 ```
 
-Frontend will run on:
+Runs at: `http://localhost:5173`
 
-```bash
-http://localhost:5173
+The Vite dev server proxies `/api/*` → `http://127.0.0.1:8001` automatically.
+
+---
+
+## 📜 Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build locally |
+
+---
+
+## 🔌 Backend Connection
+
+The Vite dev proxy in `vite.config.js` forwards all `/api` requests to the backend:
+
+```js
+proxy: {
+  '/api': {
+    target: 'http://127.0.0.1:8001',
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/api/, ''),
+  }
+}
 ```
 
----
-
-# Backend Connection
-
-The frontend connects to the FastAPI backend running at:
-
-```bash
-http://127.0.0.1:8000
-```
+No `.env` file needed for local development.
 
 ---
 
-# Required Backend Features
+## 🎨 Design System
 
-The backend should support:
-
-* JWT Authentication
-* Expense CRUD APIs
-* Category APIs
-* Analytics APIs
-* Filtering APIs
-
----
-
-# Environment Variables
-
-Create a `.env` file inside frontend:
-
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
----
-
-# Available Scripts
-
-## Start Development Server
-
-```bash
-npm run dev
-```
-
-## Build Production Version
-
-```bash
-npm run build
-```
-
-## Preview Production Build
-
-```bash
-npm run preview
-```
-
----
-
-# Planned Features
-
-* AI Financial Insights
-* Spending Prediction
-* Budget Recommendation System
-* Smart Expense Categorization
-* Real-time Analytics
-* Mobile Optimization
-* Cloud Deployment
-
----
-
-# UI/UX Notes
-
-The exported Stitch AI designs are used as:
-
-* visual reference
-* layout inspiration
-* component structure guide
-
-The final implementation follows:
-
-* reusable React components
-* scalable architecture
-* responsive design system
-
----
-
+- **Theme**: Dark premium (`bg-ink`, `text-silver`)
+- **Glass panels**: `backdrop-filter: blur` with border overlays
+- **Animations**: Framer Motion page transitions and micro-animations
+- **Typography**: Hanken Grotesk + Inter via Google Fonts
+- **Color accent**: Indigo-violet (`#6c63ff`) + Teal (`#48cfad`)
