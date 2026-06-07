@@ -4,7 +4,7 @@
 
 ---
 
-## 🧱 Project Architecture
+##  Project Architecture
 
 ```
 Expense_Tracker/
@@ -18,28 +18,28 @@ Expense_Tracker/
 
 ---
 
-## ✅ What's Built
+##  What's Built
 
-### 🔐 Authentication System
+###  Authentication System
 - User registration & login
 - JWT Bearer token authentication
 - Password hashing with bcrypt (passlib)
 - Protected route guards (frontend)
 - **Forgot Password via OTP** — 6-digit OTP sent to registered email, 10-minute expiry, timing-safe verification
 
-### 💸 Expense Management
+###  Expense Management
 - Full CRUD — add, view, edit, delete expenses
 - Category tagging (default + custom user categories)
 - Date, amount, and description tracking
 - Filtering by date range, category, and amount
 
-### 📊 Analytics & Dashboard
+###  Analytics & Dashboard
 - Monthly expense trend charts
 - Category-wise spending breakdown (pie + bar charts)
 - Total spend, average, and transaction count cards
 - Recent transactions feed
 
-### 🛡️ Admin Panel (Separate App)
+###  Admin Panel (Separate App)
 - Secure access via `x-admin-secret` header
 - Dashboard with platform-wide stats and charts
 - User management — view, edit, delete users with inline expense drawer (per-user expenses expandable in-place)
@@ -47,14 +47,14 @@ Expense_Tracker/
 - Raw Data Explorer — sortable live table view with JSON inspector and field patching
 - DB Operations — terminal-style SQL script runner, seed data, clear user data
 
-### 📧 Email Service
+###  Email Service
 - Styled HTML OTP emails sent via Gmail SMTP
 - Branded as **SmartSpend AI**
 - Configurable via `.env` — plug in any Gmail + App Password
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technologies |
 |---|---|
@@ -67,7 +67,7 @@ Expense_Tracker/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Clone the repository
 
@@ -141,7 +141,7 @@ Runs at: `http://localhost:5174` (or next available port)
 
 ---
 
-## 🔑 API Overview
+##  API Overview
 
 ### Auth Endpoints
 
@@ -185,7 +185,7 @@ Runs at: `http://localhost:5174` (or next available port)
 
 ---
 
-## 🗄️ Database Schema
+##  Database Schema
 
 ### `users`
 | Column | Type | Notes |
@@ -217,7 +217,7 @@ Runs at: `http://localhost:5174` (or next available port)
 
 ---
 
-## 📌 Current Status
+##  Current Status
 
 | Module | Status |
 |---|---|
@@ -232,7 +232,7 @@ Runs at: `http://localhost:5174` (or next available port)
 
 ---
 
-## 🔮 Upcoming
+##  Upcoming
 
 - ML-based spending prediction and smart budget recommendations
 - AI expense categorization
@@ -241,7 +241,7 @@ Runs at: `http://localhost:5174` (or next available port)
 
 ---
 
-## ⚠️ Security Notes
+##  Security Notes
 
 - Never commit real `.env` files — they are `.gitignore`d
 - The `ADMIN_SECRET` is the only guard on admin routes — keep it strong

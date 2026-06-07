@@ -4,41 +4,41 @@
 
 ---
 
-## ✅ Features
+##  Features
 
-### 🔐 Authentication
+###  Authentication
 - Login & Registration with JWT
 - Protected route guards
 - **Forgot Password** — OTP sent to registered email
 - **Reset Password** — 6-digit code input with resend cooldown and password strength meter
 
-### 🏠 Dashboard
+###  Dashboard
 - Total spend, monthly average, transaction count cards
 - Monthly trend line chart
 - Category-wise spending breakdown
 - Recent transactions feed
 
-### 💸 Expense Management
+###  Expense Management
 - Add, edit, delete expenses via modal
 - Filter by date range, category, amount
 - Paginated expense list with category badges
 
-### 📊 Analytics
+###  Analytics
 - Interactive Recharts visualisations
 - Monthly comparison bar charts
 - Category pie/donut charts
 - Spending insights
 
-### 🗂️ Categories
+###  Categories
 - Default + user-created custom categories
 - Manage, rename, delete categories
 
-### 🔗 Clickable Logo
+###  Clickable Logo
 - Logo always navigates back to home page from anywhere in the app
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | | |
 |---|---|
@@ -54,7 +54,7 @@
 
 ---
 
-## 📁 Folder Structure
+##  Folder Structure
 
 ```
 frontend/
@@ -96,7 +96,7 @@ frontend/
 
 ---
 
-## ⚙️ Setup
+##  Setup
 
 ```bash
 cd frontend
@@ -110,7 +110,7 @@ The Vite dev server proxies `/api/*` → `http://127.0.0.1:8001` automatically.
 
 ---
 
-## 📜 Available Scripts
+##  Available Scripts
 
 | Command | Description |
 |---|---|
@@ -120,7 +120,7 @@ The Vite dev server proxies `/api/*` → `http://127.0.0.1:8001` automatically.
 
 ---
 
-## 🔌 Backend Connection
+##  Backend Connection
 
 The Vite dev proxy in `vite.config.js` forwards all `/api` requests to the backend:
 
@@ -138,7 +138,7 @@ No `.env` file needed for local development.
 
 ---
 
-## 🎨 Design System
+##  Design System
 
 - **Theme**: Dark premium (`bg-ink`, `text-silver`)
 - **Glass panels**: `backdrop-filter: blur` with border overlays

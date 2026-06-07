@@ -4,46 +4,46 @@
 
 ---
 
-## ✅ Features
+##  Features
 
-### 📊 Dashboard
+###  Dashboard
 - Platform-wide stats: total users, total expenses, total spend, avg per user
 - Top spenders leaderboard
 - Category breakdown chart
 - Daily activity bar chart
 
-### 👤 User Management
+###  User Management
 - Paginated user list with spend totals and transaction counts
 - **Inline expense drawer** — click the `⌄` chevron on any user row to expand their expenses in-place
 - Edit user details (name, email) via modal
 - Delete user with cascade confirmation
 
-### 💸 Expense Management (Expenses Page)
+###  Expense Management (Expenses Page)
 - Search and filter by: User ID, Category, Date Range, Min/Max Amount
 - Inline edit expenses
 - Bulk select and delete
 - CSV export (with active filters applied)
 
-### 🔍 Raw Data Explorer
+###  Raw Data Explorer
 - Live table view of any database table
 - Sortable columns
 - JSON record inspector
 - Individual field patching without running SQL
 
-### 🛠️ DB Operations
+###  DB Operations
 - Terminal-style SQL script runner
 - Seed data utilities
 - Clear individual user data
 
 ---
 
-## 🔐 Security
+##  Security
 
 All admin API endpoints require the `x-admin-secret` header. This is set automatically from your `.env` file. Keep the secret strong — it's the only protection on the admin API.
 
 ---
 
-## ⚙️ Setup
+##  Setup
 
 ### 1. Install dependencies
 
@@ -77,7 +77,7 @@ Available at: `http://localhost:5174` (or next available port)
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 admin/
@@ -111,7 +111,7 @@ admin/
 
 ---
 
-## 🔌 Admin API Reference
+##  Admin API Reference
 
 All endpoints are mounted at `/admin` and require the `x-admin-secret` header.
 
@@ -151,7 +151,7 @@ All endpoints are mounted at `/admin` and require the `x-admin-secret` header.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | | |
 |---|---|
