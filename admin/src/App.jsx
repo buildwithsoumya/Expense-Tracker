@@ -73,27 +73,16 @@ function LoginScreen({ onLogin }) {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{
+          <img src="/favicon.png" alt="SmartSpend AI" style={{
             width: '56px',
             height: '56px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            borderRadius: '14px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '20px',
-            fontWeight: '800',
-            color: '#fff',
             marginBottom: '16px',
-            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
-          }}>
-            ET
-          </div>
+          }} />
           <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px' }}>
-            Admin Dashboard
+            SmartSpend AI Admin
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Expense Tracker Management Console
+            Management Console
           </p>
         </div>
 

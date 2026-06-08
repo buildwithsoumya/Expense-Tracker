@@ -79,23 +79,13 @@ export default function Sidebar({ onLogout }) {
         borderBottom: '1px solid var(--border-color)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
+          <img src="/favicon.png" alt="SmartSpend AI" style={{
             width: '32px',
             height: '32px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '14px',
-            fontWeight: '800',
-            color: '#fff',
-          }}>
-            ET
-          </div>
+          }} />
           <div>
             <div style={{ fontSize: '0.875rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-              Admin Panel
+              SmartSpend AI
             </div>
             <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
               Expense Tracker
