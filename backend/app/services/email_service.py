@@ -1,7 +1,5 @@
-import smtplib
 import logging
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import resend
 
 from app.config import settings
 
@@ -11,12 +9,11 @@ logger = logging.getLogger("email.service")
 def send_otp_email(recipient_email: str, otp: str, first_name: str) -> bool:
     """Send OTP email to the user. Returns True on success, False on failure."""
 
-    sender_email = settings.EMAIL_SENDER
-    sender_password = settings.EMAIL_PASSWORD
-
-    if not sender_email or not sender_password:
-        logger.error("EMAIL_SENDER or EMAIL_PASSWORD not configured in .env")
+    if not settings.RESEND_API_KEY:
+        logger.error("RESEND_API_KEY not configured in .env")
         return False
+
+    resend.api_key = settings.RESEND_API_KEY
 
     subject = "Password Reset OTP - SmartSpend AI"
 
@@ -115,17 +112,15 @@ def send_otp_email(recipient_email: str, otp: str, first_name: str) -> bool:
     </html>
     """
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = sender_email
-    msg["To"] = recipient_email
-
-    msg.attach(MIMEText(html_body, "html"))
-
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, recipient_email, msg.as_string())
+        # Note: Resend's free tier requires you to use 'onboarding@resend.dev' as the sender
+        # until you verify a custom domain.
+        resend.Emails.send({
+            "from": "SmartSpend AI <onboarding@resend.dev>",
+            "to": recipient_email,
+            "subject": subject,
+            "html": html_body
+        })
         logger.info(f"OTP email sent to {recipient_email}")
         return True
     except Exception as exc:

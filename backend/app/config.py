@@ -24,5 +24,7 @@ class Settings:
 
     EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "")
 
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+
 
 settings = Settings()
