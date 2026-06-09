@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 
 from sqlalchemy.orm import Session
 
@@ -119,6 +119,7 @@ def login_user(
 @router.post("/forgot-password")
 def forgot_password(
     payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
     """
@@ -132,16 +133,12 @@ def forgot_password(
 
     if user:
         otp = generate_and_store_otp(payload.email)
-        sent = send_otp_email(
+        background_tasks.add_task(
+            send_otp_email,
             recipient_email=payload.email,
             otp=otp,
             first_name=user.first_name,
         )
-
-        if not sent:
-            logger.warning(
-                f"OTP generated but email delivery failed for {payload.email}"
-            )
 
     return {
         "message": "If this email is registered, an OTP has been sent."
