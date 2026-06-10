@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { TrendingUp, CreditCard, Wallet } from 'lucide-react'
+import { TrendingUp, CreditCard, Wallet, Calendar } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -104,13 +104,20 @@ const Dashboard = () => {
         <EmptyState title="Analytics Offline" description={error} />
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <DashboardCard
               className="rounded-none"
               title="Total Spend"
               value={formatCurrency(overview?.total_expense ?? 0)}
               subtitle="All time"
               icon={<Wallet size={18} />}
+            />
+            <DashboardCard
+              className="rounded-none"
+              title="This Month"
+              value={formatCurrency(overview?.this_month_expense ?? 0)}
+              subtitle="Current month"
+              icon={<Calendar size={18} />}
             />
             <DashboardCard
               className="rounded-none"

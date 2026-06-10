@@ -5,6 +5,7 @@ from fastapi import (
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func, extract
+from datetime import datetime
 
 from app.database.db_dependency import get_db
 
@@ -194,7 +195,19 @@ def expense_overview(
 
     ).scalar()
 
+    current_month = datetime.utcnow().month
+    current_year = datetime.utcnow().year
+
+    this_month_expense = db.query(
+        func.sum(Expense.amount)
+    ).filter(
+        Expense.user_id == payload["user_id"],
+        extract("month", Expense.expense_date) == current_month,
+        extract("year", Expense.expense_date) == current_year
+    ).scalar()
+
     return {
         "total_expense": float(total_expense or 0),
+        "this_month_expense": float(this_month_expense or 0),
         "total_transactions": total_transactions
     }
