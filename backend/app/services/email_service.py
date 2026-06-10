@@ -1,5 +1,5 @@
 import logging
-import resend
+import requests
 
 from app.config import settings
 
@@ -9,11 +9,9 @@ logger = logging.getLogger("email.service")
 def send_otp_email(recipient_email: str, otp: str, first_name: str) -> bool:
     """Send OTP email to the user. Returns True on success, False on failure."""
 
-    if not settings.RESEND_API_KEY:
-        logger.error("RESEND_API_KEY not configured in .env")
+    if not settings.BREVO_API_KEY:
+        logger.error("BREVO_API_KEY not configured in .env")
         return False
-
-    resend.api_key = settings.RESEND_API_KEY
 
     subject = "Password Reset OTP - SmartSpend AI"
 
@@ -113,16 +111,24 @@ def send_otp_email(recipient_email: str, otp: str, first_name: str) -> bool:
     """
 
     try:
-        # Note: Resend's free tier requires you to use 'onboarding@resend.dev' as the sender
-        # until you verify a custom domain.
-        resend.Emails.send({
-            "from": "SmartSpend AI <onboarding@resend.dev>",
-            "to": recipient_email,
+        url = "https://api.brevo.com/v3/smtp/email"
+        headers = {
+            "accept": "application/json",
+            "api-key": settings.BREVO_API_KEY,
+            "content-type": "application/json"
+        }
+        payload = {
+            "sender": {"email": "support.smartspendai@gmail.com", "name": "SmartSpend AI"},
+            "to": [{"email": recipient_email}],
             "subject": subject,
-            "html": html_body
-        })
-        logger.info(f"OTP email sent to {recipient_email}")
+            "htmlContent": html_body
+        }
+        
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        logger.info(f"OTP email sent to {recipient_email} via Brevo")
         return True
-    except Exception as exc:
-        logger.error(f"Failed to send OTP email to {recipient_email}: {exc}")
+    except requests.exceptions.RequestException as exc:
+        logger.error(f"Failed to send OTP email to {recipient_email}: {exc.response.text if hasattr(exc, 'response') and exc.response else exc}")
         return False
