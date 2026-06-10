@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 
 from sqlalchemy.orm import Session
 
@@ -29,6 +29,7 @@ from app.utils.otp_store import (
 )
 
 from app.services.email_service import send_otp_email
+from app.utils.limiter import limiter
 
 logger = logging.getLogger("auth.routes")
 
@@ -77,7 +78,9 @@ def register_user(
 
 
 @router.post("/login")
+@limiter.limit("5/minute")
 def login_user(
+    request: Request,
     user: UserLogin,
     db: Session = Depends(get_db)
 ):
@@ -117,7 +120,9 @@ def login_user(
 
 
 @router.post("/forgot-password")
+@limiter.limit("3/minute")
 def forgot_password(
+    request: Request,
     payload: ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
@@ -132,7 +137,7 @@ def forgot_password(
     ).first()
 
     if user:
-        otp = generate_and_store_otp(payload.email)
+        otp = generate_and_store_otp(db, payload.email)
         background_tasks.add_task(
             send_otp_email,
             recipient_email=payload.email,
@@ -154,7 +159,7 @@ def reset_password(
     Verify the OTP and update the user's password.
     """
 
-    if not verify_otp(payload.email, payload.otp):
+    if not verify_otp(db, payload.email, payload.otp):
         raise HTTPException(
             status_code=400,
             detail="Invalid or expired OTP. Please request a new one."
@@ -179,7 +184,7 @@ def reset_password(
     user.password_hash = hash_password(payload.new_password)
     db.commit()
 
-    consume_otp(payload.email)
+    consume_otp(db, payload.email)
 
     return {
         "message": "Password reset successfully. You can now log in."

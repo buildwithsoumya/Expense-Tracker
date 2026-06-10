@@ -48,6 +48,16 @@ CREATE INDEX IF NOT EXISTS idx_expenses_user_id ON expenses(user_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_category_id ON expenses(category_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_expense_date ON expenses(expense_date);
 
+CREATE TABLE IF NOT EXISTS otp_tokens (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(150) NOT NULL,
+  otp VARCHAR(10) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_otp_tokens_email ON otp_tokens(email);
+
 INSERT INTO categories (user_id, category_name, is_default) VALUES
   (NULL, 'Food', TRUE),
   (NULL, 'Travel', TRUE),

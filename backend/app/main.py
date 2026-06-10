@@ -1,5 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.utils.limiter import limiter
 
 from app.database.connection import engine, Base
 
@@ -15,6 +19,9 @@ from app.routes.admin_routes import router as admin_router
 
 app = FastAPI()
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 # CORS — allow admin frontend and user frontend origins
 app.add_middleware(
     CORSMiddleware,

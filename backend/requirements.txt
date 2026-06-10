@@ -18,7 +18,7 @@ pyasn1==0.6.3
 pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
-psycopg2-binary==2.9.9
+psycopg[binary]==3.2.1
 python-dotenv==1.2.2
 python-jose==3.5.0
 python-multipart==0.0.28
@@ -30,3 +30,4 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.47.0
 requests==2.31.0
+slowapi==0.1.9
