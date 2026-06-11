@@ -14,7 +14,6 @@ import {
 import DashboardCard from '../components/DashboardCard'
 import ChartCard from '../components/ChartCard'
 import EmptyState from '../components/EmptyState'
-import FeedbackCard from '../components/FeedbackCard'
 import {
   getOverview,
   getCategoryBreakdown,
@@ -235,10 +234,6 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-          </div>
-          
-          <div className="grid gap-6 lg:grid-cols-2">
-            <FeedbackCard />
           </div>
         </>
       )}

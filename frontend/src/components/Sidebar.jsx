@@ -6,8 +6,12 @@ import {
   Layers,
   Settings,
   X,
+  MessageSquareHeart,
 } from 'lucide-react'
+import { useState } from 'react'
 import Logo from './Logo'
+import Modal from './Modal'
+import FeedbackCard from './FeedbackCard'
 
 const links = [
   { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -17,7 +21,10 @@ const links = [
   { to: '/settings', label: 'Settings', icon: <Settings size={18} /> },
 ]
 
-const Sidebar = ({ open, onClose }) => (
+const Sidebar = ({ open, onClose }) => {
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+
+  return (
   <>
     <aside className="hidden min-h-screen w-64 border-r border-glass-border bg-charcoal/70 p-6 md:flex md:flex-col">
       <Logo
@@ -44,8 +51,17 @@ const Sidebar = ({ open, onClose }) => (
           </NavLink>
         ))}
       </nav>
-      <div className="mt-6 border border-glass-border bg-graphite/60 p-4 text-xs text-silver-muted">
-        Precision finance, refined for quiet confidence.
+      <div className="mt-auto flex flex-col gap-4">
+        <button
+          onClick={() => setFeedbackOpen(true)}
+          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-silver-muted transition hover:text-amber-400 hover:bg-graphite border border-transparent hover:border-glass-border"
+        >
+          <MessageSquareHeart size={18} />
+          We'd love your feedback!
+        </button>
+        <div className="border border-glass-border bg-graphite/60 p-4 text-xs text-silver-muted">
+          Precision finance, refined for quiet confidence.
+        </div>
       </div>
     </aside>
 
@@ -89,8 +105,26 @@ const Sidebar = ({ open, onClose }) => (
           </NavLink>
         ))}
       </nav>
+      <div className="mt-auto pt-6">
+        <button
+          onClick={() => setFeedbackOpen(true)}
+          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-silver-muted transition hover:text-amber-400 w-full"
+        >
+          <MessageSquareHeart size={18} />
+          Give us a feedback
+        </button>
+      </div>
     </aside>
+
+    <Modal
+      open={feedbackOpen}
+      onClose={() => setFeedbackOpen(false)}
+      title=""
+    >
+      <FeedbackCard />
+    </Modal>
   </>
-)
+  )
+}
 
 export default Sidebar

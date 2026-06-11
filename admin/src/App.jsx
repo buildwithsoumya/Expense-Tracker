@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import Expenses from './pages/Expenses';
 import DataExplorer from './pages/DataExplorer';
 import DBOps from './pages/DBOps';
+import Feedback from './pages/Feedback';
 
 function LoginScreen({ onLogin }) {
   const [userId, setUserId] = useState('');
@@ -232,8 +233,9 @@ function AppLayout() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
           <Route path="/expenses" element={<Expenses />} />
-          <Route path="/data-explorer" element={<DataExplorer />} />
+          <Route path="/data" element={<DataExplorer />} />
           <Route path="/db-ops" element={<DBOps />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </main>
     </div>

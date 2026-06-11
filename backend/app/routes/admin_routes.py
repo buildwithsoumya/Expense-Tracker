@@ -22,6 +22,7 @@ from app.database.db_dependency import get_db
 from app.models.user_model import User
 from app.models.expense_model import Expense
 from app.models.category_model import Category
+from app.models.feedback_model import Feedback
 
 
 from jose import JWTError, jwt
