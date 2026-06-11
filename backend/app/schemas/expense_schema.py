@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date
 
 
@@ -6,7 +6,7 @@ class ExpenseCreate(BaseModel):
 
     category_id: int
 
-    amount: float
+    amount: float = Field(..., gt=0, description="Expense amount must be strictly greater than 0")
 
     description: str
 

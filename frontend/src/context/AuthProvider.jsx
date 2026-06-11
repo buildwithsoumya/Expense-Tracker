@@ -4,6 +4,16 @@ import { loginUser, registerUser } from '../services/authService'
 
 const extractToken = (data) => data?.access_token ?? data?.token ?? data?.jwt
 
+const isTokenValid = (token) => {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch (e) {
+    return false;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('token'))
 
@@ -39,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       token,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: isTokenValid(token),
       isLoading: false,
       login,
       register,

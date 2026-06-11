@@ -428,6 +428,14 @@ def get_stats(db: Session = Depends(get_db)):
     transaction_count = db.query(func.count(Expense.expense_id)).scalar() or 0
     total_spend = float(db.query(func.coalesce(func.sum(Expense.amount), 0)).scalar())
 
+    current_month = datetime.utcnow().month
+    current_year = datetime.utcnow().year
+
+    this_month_spend = float(db.query(func.coalesce(func.sum(Expense.amount), 0)).filter(
+        extract("month", Expense.expense_date) == current_month,
+        extract("year", Expense.expense_date) == current_year
+    ).scalar() or 0)
+
     # Category breakdown
     cat_breakdown = db.query(
         Category.category_name,
@@ -471,6 +479,7 @@ def get_stats(db: Session = Depends(get_db)):
         "user_count": user_count,
         "transaction_count": transaction_count,
         "total_spend": total_spend,
+        "this_month_spend": this_month_spend,
         "category_breakdown": [
             {"category": row[0], "amount": float(row[1])}
             for row in cat_breakdown

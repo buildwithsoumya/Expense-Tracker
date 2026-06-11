@@ -69,6 +69,8 @@ def add_expense(
     response_model=List[ExpenseResponse]
 )
 def get_expenses(
+    skip: int = 0,
+    limit: int = 100,
     payload=Depends(JWTBearer()),
     db: Session = Depends(get_db)
 ):
@@ -81,7 +83,7 @@ def get_expenses(
         Expense.category_id == Category.category_id
     ).filter(
         Expense.user_id == payload["user_id"]
-    ).all()
+    ).order_by(Expense.expense_date.desc()).offset(skip).limit(limit).all()
 
     return [
         {
