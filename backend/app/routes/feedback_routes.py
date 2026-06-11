@@ -10,7 +10,7 @@ router = APIRouter(
     tags=["Feedback"]
 )
 
-@router.post("/")
+@router.post("")
 def submit_feedback(
     feedback: FeedbackCreate,
     payload=Depends(JWTBearer()),

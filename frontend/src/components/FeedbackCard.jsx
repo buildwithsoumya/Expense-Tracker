@@ -21,7 +21,7 @@ const FeedbackCard = () => {
     setErrorMessage('')
 
     try {
-      await api.post('/feedback/', { rating, comment })
+      await api.post('/feedback', { rating, comment })
       setStatus('success')
     } catch (err) {
       setStatus('error')
