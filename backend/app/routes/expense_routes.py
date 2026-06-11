@@ -196,6 +196,10 @@ def filter_expenses(
 
     end_date: date = None,
 
+    skip: int = 0,
+
+    limit: int = 100,
+
     payload=Depends(JWTBearer()),
 
     db: Session = Depends(get_db)
@@ -239,7 +243,7 @@ def filter_expenses(
             Expense.expense_date <= end_date
         )
 
-    expenses = query.all()
+    expenses = query.order_by(Expense.expense_date.desc()).offset(skip).limit(limit).all()
 
     return [
         {

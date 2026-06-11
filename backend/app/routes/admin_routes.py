@@ -24,13 +24,34 @@ from app.models.expense_model import Expense
 from app.models.category_model import Category
 
 
-# ── Admin Auth Dependency ──────────────────────────────────────────────
+from jose import JWTError, jwt
+from datetime import datetime, timedelta, timezone
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-def admin_auth(x_admin_secret: str = Header(...)):
-    """Verify the admin secret header."""
-    if x_admin_secret != settings.ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Invalid admin secret")
-    return True
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+class AdminJWTBearer(HTTPBearer):
+    def __init__(self, auto_error: bool = False):
+        super().__init__(auto_error=auto_error)
+
+    async def __call__(self, request):
+        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        if not credentials or credentials.scheme != "Bearer":
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        token = credentials.credentials
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            if payload.get("role") != "admin":
+                raise HTTPException(status_code=403, detail="Not an admin token")
+            return payload
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+def admin_auth(payload = Depends(AdminJWTBearer())):
+    return payload
 
 
 # ── Pydantic Schemas ──────────────────────────────────────────────────
@@ -64,13 +85,26 @@ class FieldPatchRequest(BaseModel):
     value: str
 
 
-# ── Router ────────────────────────────────────────────────────────────
-
 router = APIRouter(
     prefix="/admin",
-    tags=["Admin"],
-    dependencies=[Depends(admin_auth)]
+    tags=["Admin"]
 )
+
+@router.post("/login")
+def admin_login(creds: AdminLogin):
+    if creds.username == settings.ADMIN_USERNAME and creds.password == settings.ADMIN_PASSWORD:
+        now = datetime.now(timezone.utc)
+        expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode = {
+            "sub": "admin",
+            "role": "admin",
+            "iat": int(now.timestamp()),
+            "exp": int(expire.timestamp()),
+        }
+        token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        return {"access_token": token, "token_type": "bearer"}
+    
+    raise HTTPException(status_code=401, detail="Invalid admin credentials")
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -81,7 +115,8 @@ router = APIRouter(
 def get_all_users(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Get all users with pagination and total expense count."""
     offset = (page - 1) * limit
@@ -124,7 +159,8 @@ def get_all_users(
 @router.get("/users/{user_id}/expenses")
 def get_user_expenses(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Get all expenses for a specific user."""
     user = db.query(User).filter(User.user_id == user_id).first()
@@ -166,7 +202,8 @@ def get_user_expenses(
 def update_user(
     user_id: int,
     data: UserUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Update user fields."""
     user = db.query(User).filter(User.user_id == user_id).first()
@@ -192,7 +229,8 @@ def update_user(
 @router.delete("/users/{user_id}")
 def delete_user(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Delete user and cascade delete all associated expenses and categories."""
     user = db.query(User).filter(User.user_id == user_id).first()
@@ -224,7 +262,8 @@ def get_all_expenses(
     end_date: Optional[date] = None,
     min_amount: Optional[float] = None,
     max_amount: Optional[float] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Get all expenses with optional filters and pagination."""
     query = db.query(
@@ -286,7 +325,8 @@ def get_all_expenses(
 def update_expense(
     expense_id: int,
     data: ExpenseUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Update an expense record."""
     expense = db.query(Expense).filter(Expense.expense_id == expense_id).first()
@@ -311,7 +351,8 @@ def update_expense(
 @router.delete("/expenses/{expense_id}")
 def delete_expense(
     expense_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Delete a single expense."""
     expense = db.query(Expense).filter(Expense.expense_id == expense_id).first()
@@ -326,7 +367,8 @@ def delete_expense(
 @router.post("/expenses/bulk-delete")
 def bulk_delete_expenses(
     data: BulkDeleteRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Bulk delete expenses by IDs."""
     deleted = db.query(Expense).filter(
@@ -343,7 +385,8 @@ def export_expenses_csv(
     category_id: Optional[int] = None,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Export filtered expenses as CSV."""
     query = db.query(
@@ -402,7 +445,10 @@ def export_expenses_csv(
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @router.get("/categories")
-def get_all_categories(db: Session = Depends(get_db)):
+def get_all_categories(
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
+):
     """Get all categories."""
     categories = db.query(Category).all()
     return [
@@ -422,7 +468,10 @@ def get_all_categories(db: Session = Depends(get_db)):
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @router.get("/stats")
-def get_stats(db: Session = Depends(get_db)):
+def get_stats(
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
+):
     """Get aggregate statistics for the dashboard."""
     user_count = db.query(func.count(User.user_id)).scalar() or 0
     transaction_count = db.query(func.count(Expense.expense_id)).scalar() or 0
@@ -510,7 +559,10 @@ def get_stats(db: Session = Depends(get_db)):
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @router.post("/db/run-script")
-def run_db_script(data: RunScriptRequest):
+def run_db_script(
+    data: RunScriptRequest,
+    admin_payload = Depends(admin_auth)
+):
     """Run a SQL script from the database/ directory."""
     allowed_scripts = ["schema.sql", "sample_data.sql"]
 
@@ -598,7 +650,8 @@ def run_db_script(data: RunScriptRequest):
 @router.delete("/db/clear-user/{user_id}")
 def clear_user_data(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Clear all expenses and custom categories for a user (keep the user account)."""
     user = db.query(User).filter(User.user_id == user_id).first()
@@ -625,7 +678,8 @@ def clear_user_data(
 @router.post("/patch-field")
 def patch_field(
     data: FieldPatchRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
 ):
     """Patch a single field on a record for quick fixes."""
     table_map = {

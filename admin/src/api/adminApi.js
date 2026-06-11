@@ -7,11 +7,11 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// Attach admin secret to every request
+// Attach admin token to every request
 api.interceptors.request.use((config) => {
-  const secret = sessionStorage.getItem('adminSecret') || import.meta.env.VITE_ADMIN_SECRET;
-  if (secret) {
-    config.headers['x-admin-secret'] = secret;
+  const token = sessionStorage.getItem('adminToken');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 });

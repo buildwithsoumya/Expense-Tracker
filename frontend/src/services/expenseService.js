@@ -36,8 +36,8 @@ const normalizeExpensePayload = (payload) => {
   }
 }
 
-export const getExpenses = async () => {
-  const response = await api.get('/expenses/')
+export const getExpenses = async (params = {}) => {
+  const response = await api.get('/expenses/', { params })
   return response.data
 }
 

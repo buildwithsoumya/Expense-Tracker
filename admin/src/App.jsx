@@ -13,23 +13,37 @@ function LoginScreen({ onLogin }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Simulate a small delay for UX
-    setTimeout(() => {
-      if (userId === 'admin' && password === 'password123') {
-        const secret = import.meta.env.VITE_ADMIN_SECRET || 'admin_super_secret_key_2026';
-        sessionStorage.setItem('adminSecret', secret);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/admin/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: userId,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.access_token) {
+        sessionStorage.setItem('adminToken', data.access_token);
         sessionStorage.setItem('adminLoggedIn', 'true');
         onLogin();
       } else {
-        setError('Invalid credentials. Try admin / password123');
+        setError(data.detail || 'Invalid credentials.');
       }
+    } catch (err) {
+      setError('Unable to connect to server.');
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   return (

@@ -42,17 +42,38 @@ const Expenses = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [form, setForm] = useState(defaultForm)
+  const [skip, setSkip] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const LIMIT = 50
 
-  const fetchExpenses = async (params) => {
+  const fetchExpenses = async (params, append = false) => {
     try {
-      const data = params ? await filterExpenses(params) : await getExpenses()
-      setExpenses(data ?? [])
+      if (!append) setLoading(true)
+      const currentSkip = append ? skip : 0
+      const mergedParams = { ...(params || activeFilters), skip: currentSkip, limit: LIMIT }
+      
+      const data = params && Object.keys(params).length 
+        ? await filterExpenses(mergedParams) 
+        : await getExpenses(mergedParams)
+        
+      if (!append) {
+        setExpenses(data ?? [])
+      } else {
+        setExpenses((prev) => [...prev, ...(data ?? [])])
+      }
+      
+      setHasMore((data ?? []).length === LIMIT)
+      setSkip(currentSkip + LIMIT)
       setError('')
     } catch (err) {
       setError(err?.response?.data?.detail ?? err.message ?? 'Failed to load expenses.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadMore = () => {
+    fetchExpenses(Object.keys(activeFilters).length ? activeFilters : undefined, true)
   }
 
   useEffect(() => {
@@ -146,7 +167,7 @@ const Expenses = () => {
   }
 
   const applyFilters = () => {
-    setLoading(true)
+    setSkip(0)
     if (Object.keys(activeFilters).length === 0) {
       fetchExpenses()
     } else {
@@ -190,6 +211,7 @@ const Expenses = () => {
         await addExpense(form)
       }
       setModalOpen(false)
+      setSkip(0)
       fetchExpenses(Object.keys(activeFilters).length ? activeFilters : undefined)
     } catch (err) {
       setError(err?.response?.data?.detail ?? err.message ?? 'Failed to save expense.')
@@ -200,6 +222,7 @@ const Expenses = () => {
     try {
       setLoading(true)
       await deleteExpense(expense.id ?? expense.expense_id)
+      setSkip(0)
       fetchExpenses(Object.keys(activeFilters).length ? activeFilters : undefined)
     } catch (err) {
       setError(err?.response?.data?.detail ?? err.message ?? 'Failed to delete expense.')
@@ -286,6 +309,14 @@ const Expenses = () => {
               />
             ))}
           </div>
+          
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <Button variant="secondary" onClick={loadMore}>
+                Load More
+              </Button>
+            </div>
+          )}
         </>
       )}
 
