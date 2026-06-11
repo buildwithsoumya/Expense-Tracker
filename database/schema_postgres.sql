@@ -58,6 +58,16 @@ CREATE TABLE IF NOT EXISTS otp_tokens (
 
 CREATE INDEX IF NOT EXISTS idx_otp_tokens_email ON otp_tokens(email);
 
+CREATE TABLE IF NOT EXISTS feedback (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_feedback_user
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+);
+
 INSERT INTO categories (user_id, category_name, is_default) VALUES
   (NULL, 'Food', TRUE),
   (NULL, 'Travel', TRUE),

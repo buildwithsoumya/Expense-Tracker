@@ -16,6 +16,7 @@ from app.routes.expense_routes import router as expense_router
 from app.routes.category_routes import router as category_router
 from app.routes.analytics_routes import router as analytics_router
 from app.routes.admin_routes import router as admin_router
+from app.routes.feedback_routes import router as feedback_router
 
 app = FastAPI()
 
@@ -38,6 +39,7 @@ app.include_router(expense_router)
 app.include_router(category_router)
 app.include_router(analytics_router)
 app.include_router(admin_router)
+app.include_router(feedback_router)
 
 @app.get("/")
 def home():
