@@ -33,26 +33,20 @@ class AdminLogin(BaseModel):
     username: str
     password: str
 
-class AdminJWTBearer(HTTPBearer):
-    def __init__(self, auto_error: bool = False):
-        super().__init__(auto_error=auto_error)
+admin_scheme = HTTPBearer(auto_error=False)
 
-    async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
-        if not credentials or credentials.scheme != "Bearer":
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        token = credentials.credentials
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-            if payload.get("role") != "admin":
-                raise HTTPException(status_code=403, detail="Not an admin token")
-            return payload
-        except JWTError:
-            raise HTTPException(status_code=401, detail="Invalid token")
-
-def admin_auth(payload = Depends(AdminJWTBearer())):
-    return payload
+def admin_auth(credentials: HTTPAuthorizationCredentials = Depends(admin_scheme)):
+    if not credentials or credentials.scheme != "Bearer":
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Not an admin token")
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # ── Pydantic Schemas ──────────────────────────────────────────────────
