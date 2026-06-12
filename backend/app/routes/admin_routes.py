@@ -459,6 +459,52 @@ def get_all_categories(
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# FEEDBACK MANAGEMENT
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@router.get("/feedbacks")
+def get_all_feedbacks(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    admin_payload = Depends(admin_auth)
+):
+    """Get all feedbacks with user info."""
+    offset = (page - 1) * limit
+    
+    query = db.query(
+        Feedback,
+        User.first_name,
+        User.last_name,
+        User.email
+    ).join(
+        User, Feedback.user_id == User.user_id
+    )
+    
+    total = query.count()
+    total_pages = (total + limit - 1) // limit
+    
+    rows = query.order_by(Feedback.created_at.desc()).offset(offset).limit(limit).all()
+    
+    return {
+        "items": [
+            {
+                "id": fb.id,
+                "user_id": fb.user_id,
+                "user_name": f"{fname} {lname}".strip() if fname else "Unknown",
+                "user_email": email or "",
+                "rating": fb.rating,
+                "comment": fb.comment,
+                "created_at": fb.created_at.isoformat() if fb.created_at else None
+            }
+            for fb, fname, lname, email in rows
+        ],
+        "pages": total_pages,
+        "page": page,
+        "total": total
+    }
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # STATS / ANALYTICS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
