@@ -6,7 +6,6 @@ import {
   Layers,
   Settings,
   X,
-  MessageSquareHeart,
 } from 'lucide-react'
 import { useState } from 'react'
 import Logo from './Logo'
@@ -54,9 +53,8 @@ const Sidebar = ({ open, onClose }) => {
       <div className="mt-auto flex flex-col gap-4">
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-silver-muted transition hover:text-amber-400 hover:bg-graphite border border-transparent hover:border-glass-border"
+          className="px-4 py-3 text-xs text-silver-muted transition hover:text-silver text-left"
         >
-          <MessageSquareHeart size={18} />
           We'd love your feedback!
         </button>
         <div className="border border-glass-border bg-graphite/60 p-4 text-xs text-silver-muted">
@@ -108,10 +106,9 @@ const Sidebar = ({ open, onClose }) => {
       <div className="mt-auto pt-6">
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-silver-muted transition hover:text-amber-400 w-full"
+          className="px-4 py-3 text-xs text-silver-muted transition hover:text-silver w-full text-left"
         >
-          <MessageSquareHeart size={18} />
-          Give us a feedback
+          We'd love your feedback!
         </button>
       </div>
     </aside>
